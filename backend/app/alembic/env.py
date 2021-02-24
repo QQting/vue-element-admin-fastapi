@@ -33,10 +33,10 @@ target_metadata = Base.metadata
 
 def get_url():
     user = "root"
-    password = ""
-    server = "49.235.242.224:3306"
+    password = "adlinkros"
+    server = "127.0.0.1:5432"
     db = "DWDB"
-    return f"mysql://{user}:{password}@{server}/{db}"
+    return f"postgresql://{user}:{password}@{server}/{db}"
 
 
 def run_migrations_offline():
