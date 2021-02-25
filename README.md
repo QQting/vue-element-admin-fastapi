@@ -63,7 +63,7 @@ root:[vue-element-admin-fastapi]
 2. Tools and Packages for Development
     ```bash
     sudo apt update
-    sudo apt install -y git npm python-is-python3 postgresql postgresql-contrib
+    sudo apt install -y git npm python-is-python3 postgresql postgresql-contrib redis-server
     ```
 
 3. Download this repo and install dependent packages
@@ -71,8 +71,11 @@ root:[vue-element-admin-fastapi]
     cd $HOME
     git clone https://github.com/QQting/vue-element-admin-fastapi.git
 
-    cd vue-element-admin-fastapi/backend/app
+    cd $HOME/vue-element-admin-fastapi/backend/app
     pip install -r requirements.txt
+
+    cd $HOME/vue-element-admin-fastapi/frontend
+    npm install
     ```
 
 ### IP Configuration
@@ -117,19 +120,18 @@ bash prestart.sh
 
 frontend:
 ```bash
-cd vue-element-admin-fastapi/frontend
-npm install
+cd $HOME/vue-element-admin-fastapi/frontend
 npm run dev
 ```
 
 backend:
 ```bash
-cd vue-element-admin-fastapi/backend/app/app
+cd $HOME/vue-element-admin-fastapi/backend/app/app
 python main.py
 ```
 
 celery:
 ```bash
-cd vue-element-admin-fastapi/backend/app
+cd $HOME/vue-element-admin-fastapi/backend/app
 sh worker-start.sh
 ```
