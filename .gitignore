@@ -3,3 +3,6 @@
 *.imi
 .idea
 .vscode
+backend/app/celery.log
+backend/app/nohup.out
+backend/env/*
