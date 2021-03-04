@@ -135,3 +135,9 @@ celery:
 cd $HOME/vue-element-admin-fastapi/backend/app
 sh worker-start.sh
 ```
+
+## Development SOP
+
+frontend:
+
+If you want to use mock, turn on '/mock-test' in the file ```.env.development```.
