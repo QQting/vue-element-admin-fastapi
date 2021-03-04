@@ -82,6 +82,18 @@ export const constantRoutes = [
         meta: { title: '字典数据明细', icon: 'dict', noCache: false }
       }
     ]
+  },
+  {
+    path: '/robots',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/robots/robots-index'),
+        name: 'Robots',
+        meta: { title: 'Robots', icon: 'user' }
+      }
+    ]
   }
 ]
 
