@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 export function fetchRobotList(query) {
   return request({
-    url: '/vue-element-admin/robots/list',
+    url: '/robots/list',
     method: 'get',
     params: query
   })
@@ -10,7 +10,7 @@ export function fetchRobotList(query) {
 
 export function updateRobots(data) {
   return request({
-    url: '/vue-element-admin/robots/update',
+    url: '/robots/update',
     method: 'post',
     data
   })

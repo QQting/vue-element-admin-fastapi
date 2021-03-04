@@ -22,7 +22,7 @@ for (let i = 1; i <= count; i++) {
 
 module.exports = [
   {
-    url: '/vue-element-admin/robots/list',
+    url: '/robots/list',
     type: 'get',
     response: config => {
       const { type, title, page = 1, limit = 20, sort } = config.query
@@ -50,7 +50,7 @@ module.exports = [
   },
 
   {
-    url: '/vue-element-admin/robots/update',
+    url: '/robots/update',
     type: 'post',
     response: _ => {
       return {
