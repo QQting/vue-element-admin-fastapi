@@ -32,10 +32,10 @@ target_metadata = Base.metadata
 
 
 def get_url():
-    user = "root"
+    user = "ros"
     password = "adlinkros"
     server = "127.0.0.1:5432"
-    db = "DWDB"
+    db = "ADLINK-DB"
     return f"postgresql://{user}:{password}@{server}/{db}"
 
 

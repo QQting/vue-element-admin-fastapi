@@ -79,21 +79,24 @@ root:[vue-element-admin-fastapi]
     ```
 
 ### IP Configuration
+
+If you need to modify the server IP and Port, please check the files listed below.
+
 ```bash
 frontend
-#websocket连接的ip
+# for websocket connection
 vue-element-admin-fastapi/frontend/src/views/monitor/server/index.vue 
-#开发环境连接的后端ip
+# for development env
 vue-element-admin-fastapi/frontend/.env.development	
-#生产环境连接的后端ip
+# for production env
 vue-element-admin-fastapi/frontend/.env.production	
 
 backend
-#alembic的数据库连接
+# for alembic
 vue-element-admin-fastapi/backend/app/alembic/env.py
-#后端的数据库连接
+# for web-admin & database
 vue-element-admin-fastapi/backend/app/app/core/config.py
-#celery的数据库连接
+# for celery
 vue-element-admin-fastapi/backend/app/app/celery_app/celery_app.py
 ```
 
@@ -101,14 +104,13 @@ vue-element-admin-fastapi/backend/app/app/celery_app/celery_app.py
 
 ```bash
 # Create a PostgreSQL account
-sudo -u postgres createuser root -P adlinkros
+sudo -u postgres createuser ros -P  # and then enter the password 'adlinkros' configured in env.py and config.py
 # Create a PostgreSQL database
-sudo -u postgres createdb DWDB
+sudo -u postgres createdb ADLINK-DB
 
-sudo -u postgres psql
-# In psql interface, type below command:
-update pg_cast set castcontext='a' where castsource ='integer'::regtype and casttarget='boolean'::regtype;
-# Ctrl+D to exit psql
+# BTW, if you need to delete the account or database, try this:
+sudo -u postgres dropuser <username>
+sudo -u postgres dropdb <dbname>
 
 # Please use absolute path, for example:
 export PYTHONPATH="${PYTHONPATH}:$HOME/vue-element-admin-fastapi/backend/app"
