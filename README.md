@@ -110,7 +110,7 @@ sudo -u postgres createdb ADLINK-DB
 
 # Change default password for admin account
 cd $HOME/vue-element-admin-fastapi/backend/app/app/db
-./default_passwd.py -a <admin_account> -p <password>
+./default_passwd.py -a <admin_account> -p <password> # The default value is ros/adlinkros
 
 # Initial database and create default user account
 export PYTHONPATH="${PYTHONPATH}:$HOME/vue-element-admin-fastapi/backend/app"
