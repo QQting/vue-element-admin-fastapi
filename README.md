@@ -80,7 +80,7 @@ root:[vue-element-admin-fastapi]
 
 ### IP Configuration
 
-If you need to modify the server IP and Port, please check the files listed below.
+You can skip below steps if you don't need to modify the server IP and Port.
 
 ```bash
 frontend
@@ -108,9 +108,10 @@ sudo -u postgres createuser ros -P  # and then enter the password 'adlinkros' co
 # Create a PostgreSQL database
 sudo -u postgres createdb ADLINK-DB
 
-# Change default password for admin account
+# Change default password for admin account if you want. 
+# You can skip this to use default account(ros) and password(adlinkros)
 cd $HOME/vue-element-admin-fastapi/backend/app/app/db
-./default_passwd.py -a <admin_account> -p <password> # The default value is ros/adlinkros
+./default_passwd.py -a <admin_account> -p <password>
 
 # Initial database and create default user account
 export PYTHONPATH="${PYTHONPATH}:$HOME/vue-element-admin-fastapi/backend/app"
