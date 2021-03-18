@@ -108,14 +108,19 @@ sudo -u postgres createuser ros -P  # and then enter the password 'adlinkros' co
 # Create a PostgreSQL database
 sudo -u postgres createdb ADLINK-DB
 
-# BTW, if you need to delete the account or database, try this:
-sudo -u postgres dropuser <username>
-sudo -u postgres dropdb <dbname>
+# Change default password for admin account
+cd $HOME/vue-element-admin-fastapi/backend/app/app/db
+./default_passwd.py -a <admin_account> -p <password>
 
-# Please use absolute path, for example:
+# Initial database and create default user account
 export PYTHONPATH="${PYTHONPATH}:$HOME/vue-element-admin-fastapi/backend/app"
 cd $HOME/vue-element-admin-fastapi/backend/app
-bash prestart.sh
+./prestart.sh
+
+# BTW, if you need to reset the database, you can follow below commands to remove them:
+sudo -u postgres dropdb ADLINK-DB
+sudo -u postgres dropuser ros
+# after this, go back to create PostgreSQL account and then repeat again
 ```
 
 ## Start SOP

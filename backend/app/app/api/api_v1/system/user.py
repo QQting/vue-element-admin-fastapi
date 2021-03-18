@@ -166,12 +166,12 @@ def reset_password(*,
                    db: Session = Depends(deps.get_db),
                    reset: schemas.UserPWReset
                    ) -> Any:
-    """用户管理-重置密码"""
     data = {"hashed_password": get_password_hash(reset.password)}
-    if User.is_superuser or User.id == reset.user_id:  # 只允许超级管理员和用户本人重置密码
+    # Only superuser can reset the password
+    if User.is_superuser or User.id == reset.user_id:
         db.query(models.User).filter(models.User.id == reset.user_id).update(data)
-        return {"code": 20000, "message": "修改成功"}
-    raise HTTPException(status_code=400, detail="无重置密码权限")
+        return {"code": 20000, "message": "success"}
+    raise HTTPException(status_code=400, detail="permission denied")
 
 
 @router.delete("/{ids}", response_model=schemas.Response)

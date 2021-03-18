@@ -99,16 +99,16 @@
 
         <el-table v-loading="loading" :data="userList" @selection-change="handleSelectionChange">
           <el-table-column type="selection" width="50" align="center" />
-          <el-table-column label="用户编号" align="center" prop="username" :show-overflow-tooltip="true" />
-          <el-table-column label="用户姓名" align="center" prop="nickname" :show-overflow-tooltip="true" />
+          <el-table-column label="Account" align="center" prop="username" :show-overflow-tooltip="true" />
+          <el-table-column label="Nickname" align="center" prop="nickname" :show-overflow-tooltip="true" />
           <el-table-column label="部门" align="center" prop="department.name" :show-overflow-tooltip="true" />
           <el-table-column label="手机号码" align="center" prop="phone" width="120" />
           <el-table-column label="状态" align="center" prop="status" :show-overflow-tooltip="true" />
-          <el-table-column label="操作" align="center" width="180" class-name="small-padding fixed-width">
+          <el-table-column label="Action" align="center" width="180" class-name="small-padding fixed-width">
             <template slot-scope="scope">
-              <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)">修改</el-button>
-              <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)">删除</el-button>
-              <el-button size="mini" type="text" icon="el-icon-key" @click="handleResetPwd(scope.row)">重置</el-button>
+              <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)">Edit</el-button>
+              <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)">Delete</el-button>
+              <el-button size="mini" type="text" icon="el-icon-key" @click="handleResetPwd(scope.row)">Reset</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -492,11 +492,10 @@ export default {
         this.title = '修改用户'
       })
     },
-    /** 重置密码按钮操作 */
     handleResetPwd(row) {
-      this.$prompt('请输入"' + row.username + '-' + row.nickname + '"的新密码', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消'
+      this.$prompt('Please enter the new password for "' + row.username + '-' + row.nickname + '"', 'Reset Password', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel'
       }).then(({ value }) => {
         const data = {
           'user_id': row.id,
@@ -504,7 +503,7 @@ export default {
         }
         resetUserPwd(data).then(response => {
           if (response.code === 20000) {
-            this.msgSuccess('修改成功，新密码是：' + value)
+            this.msgSuccess('The new password "' + value + '" has been set successfully!')
           } else {
             this.msgSuccess(response.msg)
           }
