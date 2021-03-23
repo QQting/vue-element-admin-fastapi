@@ -8,6 +8,7 @@
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload()">
         Export
       </el-button>
+      <upload-excel-component :on-success="handleSuccess" :before-upload="beforeUpload" />
     </div>
 
     <el-table
@@ -133,10 +134,11 @@
 import { fetchRobotList, updateRobots } from '@/api/robots'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+import UploadExcelComponent from '@/components/UploadExcel/index_robot.vue'
 
 export default {
   name: 'ComplexTable',
-  components: { Pagination },
+  components: { Pagination, UploadExcelComponent },
   directives: { waves },
   filters: {
     statusFilter(status) {
@@ -310,6 +312,30 @@ export default {
         return '#e6a23c'
       } else {
         return '#f56c6c'
+      }
+    },
+    beforeUpload(file) {
+      const isLt1M = file.size / 1024 / 1024 < 1
+      if (isLt1M) {
+        return true
+      }
+
+      this.$message({
+        message: 'Please do not upload files larger than 1m in size.',
+        type: 'warning'
+      })
+
+      return false
+    },
+    handleSuccess({ results, header }) {
+      for (var index in results) {
+        if (parseInt(index + 1, 10) > this.list.length) {
+          this.list.push(results[index])
+          continue
+        }
+        for (var param in results[index]) {
+          this.list[index][param] = results[index][param]
+        }
       }
     }
   }
