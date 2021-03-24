@@ -80,11 +80,11 @@
       </el-table-column>
       <el-table-column label="Actions" align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
-          <el-button v-waves type="primary" size="mini" @click="handleUpdate(row)">
+          <el-button v-waves type="info" size="mini" @click="handleUpdate(row)">
             Edit
           </el-button>
-          <el-button v-waves type="" size="mini" @click="todo()">
-            Refresh
+          <el-button v-waves type="primary" size="mini" @click="handlecontrol(row)">
+            Control
           </el-button>
         </template>
       </el-table-column>
@@ -132,6 +132,7 @@
         </el-button>
       </div>
     </el-dialog>
+    <control-component :dialog-show="panel_on" :config="temp" @dialogShowChange="dialogShowChange" />
   </div>
 </template>
 
@@ -140,10 +141,11 @@ import { fetchRobotList, updateRobots } from '@/api/robots'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import UploadExcelComponent from '@/components/UploadExcel/index_robot.vue'
+import ControlComponent from '@/components/ControlPanel/index.vue'
 
 export default {
   name: 'ComplexTable',
-  components: { Pagination, UploadExcelComponent },
+  components: { Pagination, UploadExcelComponent, ControlComponent },
   directives: { waves },
   filters: {
     statusFilter(status) {
@@ -188,6 +190,7 @@ export default {
         status: 'Inactive'
       },
       dialogFormVisible: false,
+      panel_on: false,
       dialogStatus: '',
       percentage: 0,
       textMap: {
@@ -287,6 +290,13 @@ export default {
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
+    },
+    handlecontrol(row) {
+      this.temp = Object.assign({}, row) // copy obj
+      this.panel_on = true
+    },
+    dialogShowChange(val) {
+      this.panel_on = val
     },
     updateData() {
       this.$refs['dataForm'].validate((valid) => {
