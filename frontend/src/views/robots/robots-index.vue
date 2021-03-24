@@ -116,13 +116,30 @@
     </el-dialog>
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
-        <el-form-item label="Status">
-          <el-select v-model="temp.status" class="filter-item" placeholder="Please select">
-            <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
-          </el-select>
-        </el-form-item>
-      </el-form>
+      <el-tabs v-model="activeName">
+        <el-tab-pane label="Config" name="first">Robot Parameters
+          <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px; margin-top:20px">
+            <el-form-item label="Status">
+              <el-select v-model="temp.status" class="filter-item" placeholder="Please select">
+                <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
+              </el-select>
+            </el-form-item>
+            <el-form-item label="Network">
+              <el-input v-model="temp.Network" />
+            </el-form-item>
+          </el-form>
+        </el-tab-pane>
+        <el-tab-pane label="WiFi" name="second">WiFi Setting
+          <el-form ref="dataForm" :model="wifi_set" label-position="left" label-width="90px" style="width: 400px; margin-left:50px; margin-top:20px">
+            <el-form-item label="SSID">
+              <el-input v-model="wifi_set.ssid" />
+            </el-form-item>
+            <el-form-item label="Password">
+              <el-input v-model="wifi_set.pwd" show-password />
+            </el-form-item>
+          </el-form>
+        </el-tab-pane>
+      </el-tabs>
       <div slot="footer" class="dialog-footer">
         <el-button v-waves @click="dialogFormVisible = false">
           Cancel
@@ -182,6 +199,10 @@ export default {
         page: 1,
         limit: 20,
         sort: '+id'
+      },
+      wifi_set: {
+        ssid: '',
+        pwd: ''
       },
       sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
       statusOptions: ['Active', 'Inactive'],
