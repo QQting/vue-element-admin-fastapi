@@ -8,7 +8,12 @@
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload()">
         Export
       </el-button>
-      <upload-excel-component :on-success="handleSuccess" :before-upload="beforeUpload" />
+      <el-row>
+        <upload-excel-component class="inline-block" :on-success="handleSuccess" :before-upload="beforeUpload" />
+        <el-button v-waves class="inline-block" type="default" size="mini" @click="todo()">
+          Refresh
+        </el-button>
+      </el-row>
     </div>
 
     <el-table
@@ -341,3 +346,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.inline-block{
+  display: inline-block;
+}
+</style>
