@@ -72,7 +72,7 @@ root:[vue-element-admin-fastapi]
     git clone https://github.com/QQting/vue-element-admin-fastapi.git
 
     cd $HOME/vue-element-admin-fastapi/backend/app
-    pip install -r requirements.txt
+    sudo pip3 install -r requirements.txt
 
     cd $HOME/vue-element-admin-fastapi/frontend
     npm install
