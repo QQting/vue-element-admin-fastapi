@@ -19,19 +19,21 @@
             :value="item"
           />
         </el-select>
-        <el-button type="primary" style="width: 100px; margin-top:-5px" @click="setled()">
+        <el-button type="primary" style="width: 100px" @click="setled()">
           Set LED
         </el-button>
       </el-row>
 
-      <el-row style="margin-top:20px">
-        <el-button style="width: 100px; margin-left:50px;" @click="todo()">
+      <el-row>
+        <el-button style="width: 100px; margin-left:50px; margin-top:20px" @click="todo()">
           Locate
         </el-button>
-        <el-button type="danger" style="width: 100px; margin-left:50px;" @click="Reboot()">
+      </el-row>
+      <el-tooltip effect="dark" content="WARN!! Reboot ROScube">
+        <el-button type="danger" style="width: 100px; margin-left:50px; margin-top:20px" @click="Reboot()">
           Reboot
         </el-button>
-      </el-row>
+      </el-tooltip>
 
       <div slot="footer" class="dialog-footer">
         <el-button @click="closeDialog">
