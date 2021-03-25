@@ -33,56 +33,56 @@
     >
       <el-table-column type="selection" align="center" />
       <el-table-column label="ID" prop="id" sortable="custom" align="center" width="80" :class-name="getSortClass('id')">
-        <template slot-scope="{row}">
+        <template #default="{row}">
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
       <el-table-column label="Status" class-name="status-col" width="100" align="center">
-        <template slot-scope="{row}">
+        <template #default="{row}">
           <el-tag :type="row.status | statusFilter">
             {{ row.status }}
           </el-tag>
         </template>
       </el-table-column>
       <el-table-column label="Hostname" width="110px" align="center">
-        <template slot-scope="{row}">
+        <template #default="{row}">
           <span>{{ row.hostname }}</span>
         </template>
       </el-table-column>
       <el-table-column label="Battery" width="110px" align="center">
-        <template slot-scope="{row}">
+        <template #default="{row}">
           <el-tag :type="row.battery | batteryFilter">
             {{ row.battery }}%
           </el-tag>
         </template>
       </el-table-column>
       <el-table-column label="WiFi Settings" width="110px" align="center">
-        <template slot-scope="{row}">
+        <template #default="{row}">
           <span>{{ row.wifi }}</span>
         </template>
       </el-table-column>
       <el-table-column label="CPU" width="110px" align="center">
-        <template slot-scope="{row}">
+        <template #default="{row}">
           <el-progress :percentage="row.cpu" :color="percentageColorMethod" />
         </template>
       </el-table-column>
       <el-table-column label="Memory" width="110px" align="center">
-        <template slot-scope="{row}">
+        <template #default="{row}">
           <el-progress :percentage="row.memory" :color="percentageColorMethod" />
         </template>
       </el-table-column>
       <el-table-column label="Storage" width="110px" align="center">
-        <template slot-scope="{row}">
+        <template #default="{row}">
           <el-progress :percentage="row.storage" :color="percentageColorMethod" />
         </template>
       </el-table-column>
       <el-table-column label="Time Zone" width="110px" align="center">
-        <template slot-scope="{row}">
+        <template #default="{row}">
           <span>{{ row.timezone }}</span>
         </template>
       </el-table-column>
       <el-table-column label="Actions" align="center" width="230" class-name="small-padding fixed-width">
-        <template slot-scope="{row}">
+        <template #default="{row}">
           <el-button v-waves type="info" size="mini" @click="handleUpdate(row)">
             Edit
           </el-button>
