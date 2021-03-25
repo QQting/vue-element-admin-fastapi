@@ -8,6 +8,9 @@
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload()">
         Export
       </el-button>
+      <el-button v-waves class="filter-item" type="primary" icon="el-icon-location-outline" @click="dialogShowWifi(true)">
+        Wifi mode
+      </el-button>
       <el-row>
         <upload-excel-component class="inline-block" :on-success="handleSuccess" :before-upload="beforeUpload" />
         <el-button v-waves class="inline-block" type="default" size="mini" @click="todo()">
@@ -116,8 +119,8 @@
     </el-dialog>
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-tabs v-model="activeName">
-        <el-tab-pane label="Config" name="first">Robot Parameters
+      <el-tabs>
+        <el-tab-pane label="Config" name="Config">Robot Parameters
           <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px; margin-top:20px">
             <el-form-item label="Status">
               <el-select v-model="temp.status" class="filter-item" placeholder="Please select">
@@ -129,7 +132,7 @@
             </el-form-item>
           </el-form>
         </el-tab-pane>
-        <el-tab-pane label="WiFi" name="second">WiFi Setting
+        <el-tab-pane label="WiFi" name="WiFi">WiFi Setting
           <el-form ref="dataForm" :model="wifi_set" label-position="left" label-width="90px" style="width: 400px; margin-left:50px; margin-top:20px">
             <el-form-item label="SSID">
               <el-input v-model="wifi_set.ssid" />
@@ -149,7 +152,8 @@
         </el-button>
       </div>
     </el-dialog>
-    <control-component :dialog-show="panel_on" :config="temp" @dialogShowChange="dialogShowChange" />
+    <control-component :dialog-show="panel_on_control" :config="temp" @dialogShowChange="dialogShowControl" />
+    <wifi-mode-component :dialog-show="panel_on_wifi" :wifi_set="wifi_set" @dialogShowChange="dialogShowWifi" />
   </div>
 </template>
 
@@ -159,10 +163,11 @@ import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import UploadExcelComponent from '@/components/UploadExcel/index_robot.vue'
 import ControlComponent from '@/components/ControlPanel/index.vue'
+import WifiModeComponent from '@/components/WiFiMode/index.vue'
 
 export default {
   name: 'ComplexTable',
-  components: { Pagination, UploadExcelComponent, ControlComponent },
+  components: { Pagination, UploadExcelComponent, ControlComponent, WifiModeComponent },
   directives: { waves },
   filters: {
     statusFilter(status) {
@@ -211,7 +216,8 @@ export default {
         status: 'Inactive'
       },
       dialogFormVisible: false,
-      panel_on: false,
+      panel_on_control: false,
+      panel_on_wifi: false,
       dialogStatus: '',
       percentage: 0,
       textMap: {
@@ -314,10 +320,13 @@ export default {
     },
     handlecontrol(row) {
       this.temp = Object.assign({}, row) // copy obj
-      this.panel_on = true
+      this.panel_on_control = true
     },
-    dialogShowChange(val) {
-      this.panel_on = val
+    dialogShowControl(val) {
+      this.panel_on_control = val
+    },
+    dialogShowWifi(val) {
+      this.panel_on_wifi = val
     },
     updateData() {
       this.$refs['dataForm'].validate((valid) => {
