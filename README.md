@@ -120,6 +120,7 @@ cd $HOME/vue-element-admin-fastapi/backend/app
 # BTW, if you need to reset the database, you can follow below commands to remove them:
 sudo -u postgres dropdb ADLINK-DB
 sudo -u postgres dropuser ros
+rm -rf $HOME/vue-element-admin-fastapi/backend/app/alembic/versions/*
 # after this, go back to create PostgreSQL account and then repeat again
 ```
 

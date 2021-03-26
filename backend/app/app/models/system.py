@@ -29,7 +29,7 @@ class Dict_Data(Base):
 
 class Department(Base):
     """部门表"""
-    __table_args__ = {"useexisting": True}
+    #__table_args__ = {"useexisting": True}
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     code = Column(String(128), doc="部门代码")
@@ -46,7 +46,7 @@ class Department(Base):
 
 class Menu(Base):
     """ 菜单表"""
-    __table_args__ = {"useexisting": True}
+    #__table_args__ = {"useexisting": True}
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     path = Column(String(128), doc="路由")
