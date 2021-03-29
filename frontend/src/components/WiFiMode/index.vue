@@ -28,7 +28,7 @@ export default {
       type: Boolean,
       default: false
     },
-    wifiSet: Object
+    wifi_set: Object
   },
   data() {
     return {
