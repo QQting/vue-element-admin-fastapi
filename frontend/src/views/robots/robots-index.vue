@@ -32,53 +32,39 @@
       @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" align="center" />
-      <el-table-column label="ID" prop="id" sortable="custom" align="center" width="80" :class-name="getSortClass('id')">
+      <el-table-column label="Index" prop="Index" sortable="custom" align="center" width="80" :class-name="getSortClass('Index')">
         <template #default="{row}">
-          <span>{{ row.id }}</span>
+          <span>{{ row.Index }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="Status" class-name="status-col" width="100" align="center">
+      <el-table-column label="Device ID" width="110px" align="center">
         <template #default="{row}">
-          <el-tag :type="row.status | statusFilter">
-            {{ row.status }}
-          </el-tag>
+          <span>{{ row.DeviceID }}</span>
         </template>
       </el-table-column>
       <el-table-column label="Hostname" width="110px" align="center">
         <template #default="{row}">
-          <span>{{ row.hostname }}</span>
+          <span>{{ row.Hostname }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="Battery" width="110px" align="center">
+      <el-table-column label="Model" width="110px" align="center">
         <template #default="{row}">
-          <el-tag :type="row.battery | batteryFilter">
-            {{ row.battery }}%
-          </el-tag>
+          <span>{{ row.Model }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="WiFi Settings" width="110px" align="center">
+      <el-table-column label="IP adress" width="110px" align="center">
         <template #default="{row}">
-          <span>{{ row.wifi }}</span>
+          <span>{{ row.IP }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="CPU" width="110px" align="center">
+      <el-table-column label="MAC address" width="150px" align="center">
         <template #default="{row}">
-          <el-progress :percentage="row.cpu" :color="percentageColorMethod" />
+          <span>{{ row.MAC }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="Memory" width="110px" align="center">
+      <el-table-column label="RMT version" width="110px" align="center">
         <template #default="{row}">
-          <el-progress :percentage="row.memory" :color="percentageColorMethod" />
-        </template>
-      </el-table-column>
-      <el-table-column label="Storage" width="110px" align="center">
-        <template #default="{row}">
-          <el-progress :percentage="row.storage" :color="percentageColorMethod" />
-        </template>
-      </el-table-column>
-      <el-table-column label="Time Zone" width="110px" align="center">
-        <template #default="{row}">
-          <span>{{ row.timezone }}</span>
+          <span>{{ row.RMT_VERSION }}</span>
         </template>
       </el-table-column>
       <el-table-column label="Actions" align="center" width="230" class-name="small-padding fixed-width">
@@ -122,11 +108,6 @@
       <el-tabs>
         <el-tab-pane label="Config" name="Config">Robot Parameters
           <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px; margin-top:20px">
-            <el-form-item label="Status">
-              <el-select v-model="temp.status" class="filter-item" placeholder="Please select">
-                <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
-              </el-select>
-            </el-form-item>
             <el-form-item label="Network">
               <el-input v-model="temp.Network" />
             </el-form-item>
@@ -170,22 +151,22 @@ export default {
   components: { Pagination, UploadExcelComponent, ControlComponent, WifiModeComponent },
   directives: { waves },
   filters: {
-    statusFilter(status) {
-      const statusMap = {
-        Active: 'success',
-        Inactive: 'danger'
-      }
-      return statusMap[status]
-    },
-    batteryFilter(battery) {
-      var tag_val = 'success'
-      if (battery < 10) {
-        tag_val = 'danger'
-      } else if (battery < 20) {
-        tag_val = 'warning'
-      }
-      return tag_val
-    }
+    // statusFilter(status) {
+    //   const statusMap = {
+    //     Active: 'success',
+    //     Inactive: 'danger'
+    //   }
+    //   return statusMap[status]
+    // },
+    // batteryFilter(battery) {
+    //   var tag_val = 'success'
+    //   if (battery < 10) {
+    //     tag_val = 'danger'
+    //   } else if (battery < 20) {
+    //     tag_val = 'warning'
+    //   }
+    //   return tag_val
+    // }
   },
   data() {
     return {
@@ -203,17 +184,15 @@ export default {
       listQuery: {
         page: 1,
         limit: 20,
-        sort: '+id'
+        sort: '+Index'
       },
       wifi_set: {
         ssid: '',
         pwd: ''
       },
-      sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
-      statusOptions: ['Active', 'Inactive'],
+      sortOptions: [{ label: 'Index Ascending', key: '+Index' }, { label: 'Index Descending', key: '-Index' }],
       temp: {
-        id: undefined,
-        status: 'Inactive'
+        index: undefined
       },
       dialogFormVisible: false,
       panel_on_control: false,
@@ -253,16 +232,16 @@ export default {
     },
     sortChange(data) {
       const { prop, order } = data
-      if (prop === 'id') {
-        this.sortByID(order)
+      if (prop === 'Index') {
+        this.sortByIndex(order)
       }
     },
-    sortByID(order) {
+    sortByIndex(order) {
       if (order === 'ascending') {
-        this.listQuery.sort = '+id'
+        this.listQuery.sort = '+Index'
         this.handleFilter()
       } else if (order === 'descending') {
-        this.listQuery.sort = '-id'
+        this.listQuery.sort = '-Index'
         this.handleFilter()
       } else {
         // order === 'null', do nothing
@@ -333,7 +312,7 @@ export default {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
           updateRobots(tempData).then(() => {
-            const index = this.list.findIndex(v => v.id === this.temp.id)
+            const index = this.list.findIndex(v => v.index === this.temp.index)
             this.list.splice(index, 1, this.temp)
             this.dialogFormVisible = false
             this.$notify({

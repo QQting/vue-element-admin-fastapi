@@ -11,7 +11,8 @@ def search():
     rmt_py_wrapper.delete_intptr(num_ptr) # release num_ptr
 
     # Put data in JSON format
-    data=[{"Total": num}]
+    data = {"total": num, "items": []}
+    items = []
     for i in range(0, num):
         item = {
             "ID": dev_list[i].deviceID,
@@ -21,9 +22,17 @@ def search():
             "MAC": dev_list[i].mac,
             "RMT_VERSION": dev_list[i].rmt_version
         }
-        data.append(item)
+        items.append(item)
+
+    print("=== items ===")
+    result = json.dumps(items, indent=4)
+    print(result)
+
+    print("=== data ===")
+    data["items"] = items
     result = json.dumps(data, indent=4)
     print(result)
+    # print(result)
 
 def main():
     print("RMT_VERSION=%s" % rmt_py_wrapper.rmt_server_version())

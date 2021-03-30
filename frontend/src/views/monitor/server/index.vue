@@ -130,7 +130,7 @@ export default {
   created() {
     const _this = this
     _this.loading = true
-    this.socket = io('http://127.0.0.1:8080/server', {
+    this.socket = io(process.env.VUE_APP_BASE_API + '/server', {
       transports: ['websocket']
     })
     this.socket.on('monitor_server', function(data) {
