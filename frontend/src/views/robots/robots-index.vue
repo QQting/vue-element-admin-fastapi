@@ -134,7 +134,7 @@
       </div>
     </el-dialog>
     <control-component :dialog-show="panel_on_control" :config="temp" @dialogShowChange="dialogShowControl" />
-    <wifi-mode-component :dialog-show="panel_on_wifi" :wifi_set="temp_wifi" @dialogShowChange="dialogShowWifi" @syncData="syncData" />
+    <wifi-mode-component :dialog-show="panel_on_wifi" :wifi-set="temp_wifi" @dialogShowChange="dialogShowWifi" @syncData="syncData" />
   </div>
 </template>
 

@@ -1,14 +1,14 @@
 <template>
   <div>
     <el-dialog title="Access Point Mode Setting" :visible.sync="dialogFormVisible" @close="closeDialog">
-      <el-form ref="dataForm" :model="wifi_set" label-position="left" label-width="125px" style="width: 400px; margin-left:50px; margin-top:20px">
+      <el-form ref="dataForm" :model="wifiSet" label-position="left" label-width="125px" style="width: 400px; margin-left:50px; margin-top:20px">
         <el-switch
-          v-model="wifi_set.mode_on"
+          v-model="wifiSet.mode_on"
           active-text="ON"
           inactive-text="OFF"
         />
         <el-form-item label="Frequency Band" style="margin-top:20px">
-          <el-select v-model="wifi_set.band" placeholder="Select" style="margin-left:50px">
+          <el-select v-model="wifiSet.band" placeholder="Select" style="margin-left:50px">
             <el-option
               v-for="item in band_list"
               :key="item"
@@ -18,10 +18,10 @@
           </el-select>
         </el-form-item>
         <el-form-item label="SSID">
-          <el-input v-model="wifi_set.ssid" />
+          <el-input v-model="wifiSet.ssid" />
         </el-form-item>
         <el-form-item label="Password">
-          <el-input v-model="wifi_set.password" show-password minlength="8" />
+          <el-input v-model="wifiSet.password" show-password minlength="8" />
         </el-form-item>
       </el-form>
 
@@ -57,7 +57,7 @@ export default {
   },
   computed: {
     button_block() {
-      return this.wifi_set.password ? this.wifi_set.password.length < 8 : true
+      return this.wifiSet.password ? this.wifiSet.password.length < 8 : true
     }
   },
   watch: {
@@ -70,7 +70,7 @@ export default {
       this.$emit('dialogShowChange', false)
     },
     async handleUpdate() {
-      await updateWifi(this.wifi_set)
+      await updateWifi(this.wifiSet)
       this.$emit('dialogShowChange', false)
       this.$emit('syncData')
       this.$notify({
