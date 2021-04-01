@@ -9,28 +9,34 @@ from app.extensions.utils import list_to_tree, dfs_tree_to_list
 router = APIRouter()
 
 
+# @router.get("/routes", response_model=schemas.Response)
+# def routes(db: Session = Depends(deps.get_db)) -> Any:
+#     """get all routes info"""
+#     menus = db.query(models.Menu).options(joinedload(models.Menu.role_menu)).all()
+#     print("***!!! CT: routes: start, menus="), print(menus)
+#     def deal_menu(menu):
+#         meta = {'title': menu.title,
+#                 "icon": menu.icon,
+#                 "noCache": menu.no_cache,
+#                 "affix": menu.affix,
+#                 "order": menu.order,
+#                 "roles": [role.role_id for role in menu.role_menu]
+#                 }
+#         menu = menu.dict()
+#         # menu["hidden"] = False
+#         menu["alwaysShow"] = True if not menu['parent_id'] else False
+#         menu['meta'] = meta
+#         return menu
+
+#     menus = list_to_tree([deal_menu(menu) for menu in menus], order="order")
+#     print("***!!! CT: routes: end, menus="), print(menus)
+#     return {"code": 20000, "data": menus}
 @router.get("/routes", response_model=schemas.Response)
-def routes(db: Session = Depends(deps.get_db)) -> Any:
+def routes() -> Any:
     """get all routes info"""
-    menus = db.query(models.Menu).options(joinedload(models.Menu.role_menu)).all()
+    menus=[] # no more dynamic menu
 
-    def deal_menu(menu):
-        meta = {'title': menu.title,
-                "icon": menu.icon,
-                "noCache": menu.no_cache,
-                "affix": menu.affix,
-                "order": menu.order,
-                "roles": [role.role_id for role in menu.role_menu]
-                }
-        menu = menu.dict()
-        # menu["hidden"] = False
-        menu["alwaysShow"] = True if not menu['parent_id'] else False
-        menu['meta'] = meta
-        return menu
-
-    menus = list_to_tree([deal_menu(menu) for menu in menus], order="order")
     return {"code": 20000, "data": menus}
-
 
 @router.get("/roles", response_model=schemas.Response)
 def read_roles(db: Session = Depends(deps.get_db)) -> Any:

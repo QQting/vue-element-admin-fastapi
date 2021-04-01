@@ -12,27 +12,27 @@ import Layout from '@/layout'
  * all roles can be accessed
  */
 export const constantRoutes = [
-  {
-    path: '/redirect',
-    component: Layout,
-    hidden: true,
-    children: [
-      {
-        path: '/redirect/:path(.*)',
-        component: () => import('@/views/redirect/index')
-      }
-    ]
-  },
+  // {
+  //   path: '/redirect',
+  //   component: Layout,
+  //   hidden: true,
+  //   children: [
+  //     {
+  //       path: '/redirect/:path(.*)',
+  //       component: () => import('@/views/redirect/index')
+  //     }
+  //   ]
+  // },
   {
     path: '/login',
     component: () => import('@/views/login/index'),
     hidden: true
   },
-  {
-    path: '/auth-redirect',
-    component: () => import('@/views/login/auth-redirect'),
-    hidden: true
-  },
+  // {
+  //   path: '/auth-redirect',
+  //   component: () => import('@/views/login/auth-redirect'),
+  //   hidden: true
+  // },
   {
     path: '/404',
     component: () => import('@/views/error-page/404'),
@@ -56,33 +56,33 @@ export const constantRoutes = [
       }
     ]
   },
-  {
-    path: '/profile',
-    component: Layout,
-    redirect: '/profile/index',
-    hidden: true,
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/profile/index'),
-        name: 'Profile',
-        meta: { title: 'Profile', icon: 'user', noCache: true }
-      }
-    ]
-  },
-  {
-    path: '/dict/data/',
-    component: Layout,
-    hidden: true,
-    children: [
-      {
-        path: '/dict/data/:id?',
-        component: () => import('@/views/system/dict/data'),
-        name: 'DictData',
-        meta: { title: '字典数据明细', icon: 'dict', noCache: false }
-      }
-    ]
-  },
+  // {
+  //   path: '/profile',
+  //   component: Layout,
+  //   redirect: '/profile/index',
+  //   hidden: true,
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       component: () => import('@/views/profile/index'),
+  //       name: 'Profile',
+  //       meta: { title: 'Profile', icon: 'user', noCache: true }
+  //     }
+  //   ]
+  // },
+  // {
+  //   path: '/dict/data/',
+  //   component: Layout,
+  //   hidden: true,
+  //   children: [
+  //     {
+  //       path: '/dict/data/:id?',
+  //       component: () => import('@/views/system/dict/data'),
+  //       name: 'DictData',
+  //       meta: { title: '字典数据明细', icon: 'dict', noCache: false }
+  //     }
+  //   ]
+  // },
   {
     path: '/robots',
     component: Layout,

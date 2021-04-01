@@ -16,11 +16,15 @@ from app.extensions.utils import list_to_tree
 router = APIRouter()
 
 
+# @router.get("/me", response_model=schemas.Response)
+# def read_user_me(current_user: models.User = Depends(deps.get_current_active_user)) -> Any:
+#     user = current_user.dict()
+#     user['roles'] = [role.role.id for role in current_user.user_role]
+#     return {"code": 20000, "data": user}
 @router.get("/me", response_model=schemas.Response)
-def read_user_me(current_user: models.User = Depends(deps.get_current_active_user)) -> Any:
-    """登陆 获取当前用户 角色"""
-    user = current_user.dict()
-    user['roles'] = [role.role.id for role in current_user.user_role]
+def read_user_me() -> Any:
+    user = {'avatar': 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif'}
+    user['roles'] = [1]
     return {"code": 20000, "data": user}
 
 
