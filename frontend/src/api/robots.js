@@ -15,3 +15,18 @@ export function updateRobots(data) {
     data
   })
 }
+
+export function updateWifi(data) {
+  return request({
+    url: '/robots/wifi',
+    method: 'post',
+    data
+  })
+}
+
+export function fetchWifi() {
+  return request({
+    url: '/robots/wifi-init',
+    method: 'get'
+  })
+}

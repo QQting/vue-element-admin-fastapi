@@ -114,12 +114,12 @@
           </el-form>
         </el-tab-pane>
         <el-tab-pane label="WiFi" name="WiFi">WiFi Setting
-          <el-form ref="dataForm" :model="wifi_set" label-position="left" label-width="90px" style="width: 400px; margin-left:50px; margin-top:20px">
+          <el-form ref="dataForm" :model="wifi_client" label-position="left" label-width="90px" style="width: 400px; margin-left:50px; margin-top:20px">
             <el-form-item label="SSID">
-              <el-input v-model="wifi_set.ssid" />
+              <el-input v-model="wifi_client.ssid" />
             </el-form-item>
             <el-form-item label="Password">
-              <el-input v-model="wifi_set.pwd" show-password />
+              <el-input v-model="wifi_client.password" show-password />
             </el-form-item>
           </el-form>
         </el-tab-pane>
@@ -134,12 +134,12 @@
       </div>
     </el-dialog>
     <control-component :dialog-show="panel_on_control" :config="temp" @dialogShowChange="dialogShowControl" />
-    <wifi-mode-component :dialog-show="panel_on_wifi" :wifi_set="wifi_set" @dialogShowChange="dialogShowWifi" />
+    <wifi-mode-component :dialog-show="panel_on_wifi" :wifi-set="temp_wifi" @dialogShowChange="dialogShowWifi" @syncData="syncData" />
   </div>
 </template>
 
 <script>
-import { fetchRobotList, updateRobots } from '@/api/robots'
+import { fetchRobotList, updateRobots, fetchWifi } from '@/api/robots'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import UploadExcelComponent from '@/components/UploadExcel/index_robot.vue'
@@ -188,8 +188,15 @@ export default {
       },
       wifi_set: {
         ssid: '',
-        pwd: ''
+        password: '',
+        band: '2.4 GHz',
+        mode_on: false
       },
+      wifi_client: {
+        ssid: '',
+        password: ''
+      },
+      temp_wifi: {},
       sortOptions: [{ label: 'Index Ascending', key: '+Index' }, { label: 'Index Descending', key: '-Index' }],
       temp: {
         index: undefined
@@ -224,6 +231,9 @@ export default {
         setTimeout(() => {
           this.listLoading = false
         }, 1.5 * 1000)
+      })
+      fetchWifi().then(response => {
+        this.wifi_set = response.data
       })
     },
     handleFilter() {
@@ -305,7 +315,11 @@ export default {
       this.panel_on_control = val
     },
     dialogShowWifi(val) {
+      if (val) { this.temp_wifi = Object.assign({}, this.wifi_set) }
       this.panel_on_wifi = val
+    },
+    syncData() {
+      this.wifi_set = Object.assign({}, this.temp_wifi)
     },
     updateData() {
       this.$refs['dataForm'].validate((valid) => {
