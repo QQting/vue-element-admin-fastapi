@@ -1,16 +1,18 @@
 <template>
   <div>
     <input ref="excel-upload-input" class="excel-upload-input" type="file" accept=".xlsx, .xls" @change="handleClick">
-    <el-button :loading="loading" style="margin-left:16px;" size="mini" type="primary" @click="handleUpload">
-      import
+    <el-button v-waves :loading="loading" icon="el-icon-upload2" type="primary" @click="handleUpload">
+      Import
     </el-button>
   </div>
 </template>
 
 <script>
 import XLSX from 'xlsx'
+import waves from '@/directive/waves' // waves directive
 
 export default {
+  directives: { waves },
   props: {
     beforeUpload: Function, // eslint-disable-line
     onSuccess: Function// eslint-disable-line
