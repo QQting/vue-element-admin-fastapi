@@ -41,6 +41,10 @@ def search():
     result = json.dumps(data, indent=4)
     print(result)
 
+    # TODO: free dev_list
+    # rmt_py_wrapper.rmt_server_free_device_list(dev_list)
+    rmt_py_wrapper.rmt_server_deinit()
+
     return data
 
 
