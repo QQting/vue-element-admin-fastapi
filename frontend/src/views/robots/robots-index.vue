@@ -27,7 +27,7 @@
       @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" align="center" />
-      <el-table-column label="Index" prop="Index" sortable="custom" align="center" width="80" :class-name="getSortClass('Index')">
+      <el-table-column label="Index" prop="Index" sortable align="center" width="80" :class-name="getSortClass('Index')">
         <template #default="{row}">
           <span>{{ row.Index }}</span>
         </template>
