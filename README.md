@@ -111,7 +111,7 @@ npm run dev
 backend:
 ```bash
 cd $HOME/vue-element-admin-fastapi/backend/app/app
-export LD_LIBRARY_PATH=/home/ros/vue-element-admin-fastapi/backend/app/app/api/api_v1/robots/RMT_core
+export LD_LIBRARY_PATH=$HOME/vue-element-admin-fastapi/backend/app/app/api/api_v1/robots/RMT_core
 python main.py
 ```
 
