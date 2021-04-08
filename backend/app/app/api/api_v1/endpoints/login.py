@@ -34,7 +34,7 @@ def login_token(form_data: OAuth2PasswordRequestForm = Depends()) -> Any:
     }
 
 # /login/access-token is used by RESTful API server
-@router.post("/login/access-token", response_model=schemas.Response, exclude_dependencies=True)
+@router.post("/login/access-token", response_model=schemas.Token, exclude_dependencies=True)
 def login_access_token(form_data: OAuth2PasswordRequestForm = Depends()) -> Any:
     """OAuth2 compatible token login, get an access token for future requests"""
     user = security.authenticate_user(security.fake_users_db, form_data.username, form_data.password)
@@ -47,12 +47,8 @@ def login_access_token(form_data: OAuth2PasswordRequestForm = Depends()) -> Any:
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = security.create_access_token(user.username, expires_delta=access_token_expires)
     return {
-        "code": 20000,
-        "data": {
-            "token": access_token,
-            "token_type": "bearer",
-        },
-        "message": "",
+        "access_token": access_token,
+        "token_type": "bearer",
     }
 
 @router.post("/logout", response_model=schemas.Response)

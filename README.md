@@ -63,7 +63,7 @@ root:[vue-element-admin-fastapi]
 2. Tools and Packages for Development
     ```bash
     sudo apt update
-    sudo apt install -y git npm python-is-python3 postgresql postgresql-contrib redis-server
+    sudo apt install -y git npm python-is-python3
     ```
 
 3. Download this repo and install dependent packages
@@ -100,30 +100,6 @@ vue-element-admin-fastapi/backend/app/app/core/config.py
 vue-element-admin-fastapi/backend/app/app/celery_app/celery_app.py
 ```
 
-### Database Configuration
-
-```bash
-# Create a PostgreSQL account
-sudo -u postgres createuser ros -P  # and then enter the password 'adlinkros' configured in env.py and config.py
-# Create a PostgreSQL database
-sudo -u postgres createdb ADLINK-DB
-
-# Change default web login account and password. You can skip it to use default account(ros) and password(adlinkros)
-cd $HOME/vue-element-admin-fastapi/backend/app/app/db
-./default_passwd.py -a <admin_account> -p <password>
-
-# Initial database and create default user account
-export PYTHONPATH="${PYTHONPATH}:$HOME/vue-element-admin-fastapi/backend/app"
-cd $HOME/vue-element-admin-fastapi/backend/app
-./prestart.sh
-
-# BTW, if you need to reset the database, you can follow below commands to remove them:
-sudo -u postgres dropdb ADLINK-DB
-sudo -u postgres dropuser ros
-rm -rf $HOME/vue-element-admin-fastapi/backend/app/alembic/versions/*
-# after this, go back to create PostgreSQL account and then repeat again
-```
-
 ## Start SOP
 
 frontend:
@@ -135,6 +111,7 @@ npm run dev
 backend:
 ```bash
 cd $HOME/vue-element-admin-fastapi/backend/app/app
+export LD_LIBRARY_PATH=$HOME/vue-element-admin-fastapi/backend/app/app/api/api_v1/robots/RMT_core
 python main.py
 ```
 
