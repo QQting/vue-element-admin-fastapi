@@ -78,6 +78,19 @@ class device_info(object):
 # Register device_info in _rmt_py_wrapper:
 _rmt_py_wrapper.device_info_swigregister(device_info)
 
+class data_info(object):
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc="The membership flag")
+    __repr__ = _swig_repr
+    deviceID = property(_rmt_py_wrapper.data_info_deviceID_get, _rmt_py_wrapper.data_info_deviceID_set)
+    value_list = property(_rmt_py_wrapper.data_info_value_list_get, _rmt_py_wrapper.data_info_value_list_set)
+
+    def __init__(self):
+        _rmt_py_wrapper.data_info_swiginit(self, _rmt_py_wrapper.new_data_info())
+    __swig_destroy__ = _rmt_py_wrapper.delete_data_info
+
+# Register data_info in _rmt_py_wrapper:
+_rmt_py_wrapper.data_info_swigregister(data_info)
+
 
 def rmt_server_config(interface):
     return _rmt_py_wrapper.rmt_server_config(interface)
@@ -91,11 +104,14 @@ def rmt_server_create_device_list(num):
 def rmt_server_free_device_list(dev):
     return _rmt_py_wrapper.rmt_server_free_device_list(dev)
 
-def rmt_server_get_info(key, value):
-    return _rmt_py_wrapper.rmt_server_get_info(key, value)
+def rmt_server_get_info(id_list, id_num, key_list, info_num):
+    return _rmt_py_wrapper.rmt_server_get_info(id_list, id_num, key_list, info_num)
 
-def rmt_server_set_info(key, value):
-    return _rmt_py_wrapper.rmt_server_set_info(key, value)
+def rmt_server_free_info(info_list, info_num):
+    return _rmt_py_wrapper.rmt_server_free_info(info_list, info_num)
+
+def rmt_server_set_info(dev_list, dev_num):
+    return _rmt_py_wrapper.rmt_server_set_info(dev_list, dev_num)
 
 def rmt_server_send_file(filename, pFile, file_len):
     return _rmt_py_wrapper.rmt_server_send_file(filename, pFile, file_len)
@@ -149,6 +165,60 @@ _rmt_py_wrapper.device_info_list_swigregister(device_info_list)
 
 def device_info_list_frompointer(t):
     return _rmt_py_wrapper.device_info_list_frompointer(t)
+
+class data_info_list(object):
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc="The membership flag")
+    __repr__ = _swig_repr
+
+    def __init__(self, nelements):
+        _rmt_py_wrapper.data_info_list_swiginit(self, _rmt_py_wrapper.new_data_info_list(nelements))
+    __swig_destroy__ = _rmt_py_wrapper.delete_data_info_list
+
+    def __getitem__(self, index):
+        return _rmt_py_wrapper.data_info_list___getitem__(self, index)
+
+    def __setitem__(self, index, value):
+        return _rmt_py_wrapper.data_info_list___setitem__(self, index, value)
+
+    def cast(self):
+        return _rmt_py_wrapper.data_info_list_cast(self)
+
+    @staticmethod
+    def frompointer(t):
+        return _rmt_py_wrapper.data_info_list_frompointer(t)
+
+# Register data_info_list in _rmt_py_wrapper:
+_rmt_py_wrapper.data_info_list_swigregister(data_info_list)
+
+def data_info_list_frompointer(t):
+    return _rmt_py_wrapper.data_info_list_frompointer(t)
+
+class ulong_array(object):
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc="The membership flag")
+    __repr__ = _swig_repr
+
+    def __init__(self, nelements):
+        _rmt_py_wrapper.ulong_array_swiginit(self, _rmt_py_wrapper.new_ulong_array(nelements))
+    __swig_destroy__ = _rmt_py_wrapper.delete_ulong_array
+
+    def __getitem__(self, index):
+        return _rmt_py_wrapper.ulong_array___getitem__(self, index)
+
+    def __setitem__(self, index, value):
+        return _rmt_py_wrapper.ulong_array___setitem__(self, index, value)
+
+    def cast(self):
+        return _rmt_py_wrapper.ulong_array_cast(self)
+
+    @staticmethod
+    def frompointer(t):
+        return _rmt_py_wrapper.ulong_array_frompointer(t)
+
+# Register ulong_array in _rmt_py_wrapper:
+_rmt_py_wrapper.ulong_array_swigregister(ulong_array)
+
+def ulong_array_frompointer(t):
+    return _rmt_py_wrapper.ulong_array_frompointer(t)
 
 
 
