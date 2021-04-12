@@ -1,6 +1,6 @@
 import socketio
 
-from app.api.api_v1.websocket.server import ServerNamespace
+from app.api.api_v1.websocket.monitor import ServerNamespace
 
 sio = socketio.AsyncServer(async_mode='asgi',cors_allowed_origins='*')
 sio.register_namespace(ServerNamespace('/server',))

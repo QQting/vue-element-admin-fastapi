@@ -94,6 +94,18 @@ export const constantRoutes = [
         meta: { title: 'Robots', icon: 'user' }
       }
     ]
+  },
+  {
+    path: '/monitor',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/monitor/robots-index'),
+        name: 'Monitor',
+        meta: { title: 'Monitor', icon: 'el-icon-cpu' }
+      }
+    ]
   }
 ]
 
