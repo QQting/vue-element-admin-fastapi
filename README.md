@@ -92,8 +92,6 @@ vue-element-admin-fastapi/frontend/.env.development
 vue-element-admin-fastapi/frontend/.env.production	
 
 backend
-# for alembic
-vue-element-admin-fastapi/backend/app/alembic/env.py
 # for web-admin & database
 vue-element-admin-fastapi/backend/app/app/core/config.py
 # for celery
@@ -113,12 +111,6 @@ backend:
 cd $HOME/vue-element-admin-fastapi/backend/app/app
 export LD_LIBRARY_PATH=$HOME/vue-element-admin-fastapi/backend/app/app/api/api_v1/robots/RMT_core
 python main.py
-```
-
-celery:
-```bash
-cd $HOME/vue-element-admin-fastapi/backend/app
-sh worker-start.sh
 ```
 
 ## Development SOP
