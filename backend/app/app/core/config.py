@@ -24,7 +24,7 @@ class Settings():
     #         return v
     #     raise ValueError(v)
 
-    PROJECT_NAME: str = "Vue-Element-Admin-Fastapi"
+    PROJECT_NAME: str = "RMT - RESTful API Server"
     # SENTRY_DSN: Optional[HttpUrl] = None
 
     # @validator("SENTRY_DSN", pre=True)
