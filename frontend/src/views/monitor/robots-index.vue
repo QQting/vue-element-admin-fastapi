@@ -20,17 +20,17 @@
     >
       <el-table-column label="Index" prop="Index" sortable align="center" width="80" :class-name="getSortClass('Index')">
         <template #default="{row}">
-          <span>{{ row.Index }}</span>
+          <span>{{ row.index }}</span>
         </template>
       </el-table-column>
       <el-table-column label="Device ID" width="110px" align="center">
         <template #default="{row}">
-          <span>{{ row.DeviceID }}</span>
+          <span>{{ row.deviceID }}</span>
         </template>
       </el-table-column>
       <el-table-column label="Hostname" width="110px" align="center">
         <template #default="{row}">
-          <span>{{ row.Hostname }}</span>
+          <span>{{ row.hostname }}</span>
         </template>
       </el-table-column>
       <el-table-column label="CPU Usage" width="160px" align="center">
@@ -45,7 +45,7 @@
       </el-table-column>
       <el-table-column label="Memory" width="160px" align="center">
         <template #default="{row}">
-          <el-progress :percentage="row.memory" :color="usageColorMethod" />
+          <el-progress :percentage="row.ram" :color="usageColorMethod" />
         </template>
       </el-table-column>
       <el-table-column label="Battery" width="160px" align="center">
@@ -69,6 +69,7 @@ export default {
   data() {
     return {
       tableKey: 0,
+      percentage: 0,
       list: null,
       total: 0,
       isIndeterminate: true,
@@ -86,20 +87,23 @@ export default {
     }
   },
   created() {
-    const _this = this
-    this.socket = io(process.env.VUE_APP_BASE_API + '/server', {
-      transports: ['websocket']
-    })
-    this.socket.on('monitor_robot', function(data) {
-      _this.list = data.items
-      _this.total = data.total
-      _this.listLoading = false
-    })
+    this.getList()
   },
   beforeDestroy() {
     this.socket.close()
   },
   methods: {
+    getList() {
+      const _this = this
+      this.socket = io(process.env.VUE_APP_BASE_API + '/server', {
+        transports: ['websocket']
+      })
+      this.socket.on('monitor_robot', function(data) {
+        _this.list = data.items
+        _this.total = data.total
+        _this.listLoading = false
+      })
+    },
     handleFilter() {
       this.listQuery.page = 1
     },

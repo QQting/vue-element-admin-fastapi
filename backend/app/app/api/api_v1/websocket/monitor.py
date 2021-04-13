@@ -72,32 +72,54 @@ class ServerNamespace(socketio.AsyncNamespace):
         while background_task_started:
             sys_info = await self.hardware_info()
             await self.emit('monitor_robot', sys_info)
-            await self.server.sleep(1.5)
+            await self.server.sleep(5)
 
     async def hardware_info(self):
         rmt_py_wrapper.rmt_server_init()
 
+        # Get device list:
         num_ptr = rmt_py_wrapper.new_intptr()
         dev_list = rmt_py_wrapper.device_info_list.frompointer(rmt_py_wrapper.rmt_server_create_device_list(num_ptr))
-        num = rmt_py_wrapper.intptr_value(num_ptr)
+        dev_num = rmt_py_wrapper.intptr_value(num_ptr)
         rmt_py_wrapper.delete_intptr(num_ptr) # release num_ptr
 
+        # Create config key string
+        config_list = ["cpu", "ram", "hostname", "wifi"]
+        config_key_str = ""
+        for item in config_list:
+            config_key_str += item + ';'
+
+        # Get device info list
+        id_list = rmt_py_wrapper.ulong_array(dev_num)
+        for i in range(0, dev_num):
+            id_list[i] = dev_list[i].deviceID
+        info_num_ptr = rmt_py_wrapper.new_intptr()
+        info_list = rmt_py_wrapper.data_info_list.frompointer(rmt_py_wrapper.rmt_server_get_info(id_list, dev_num, config_key_str, info_num_ptr))
+        info_num = rmt_py_wrapper.intptr_value(info_num_ptr)
+        rmt_py_wrapper.delete_intptr(info_num_ptr) # release info_num_ptr
+
         # Put data in JSON format
-        data = {"total": num, "items": []}
+        data = {"total": info_num, "items": []}
         items = []
-        for i in range(0, num):
-            item = {
-                "Index": (i+1),
-                "DeviceID": dev_list[i].deviceID,
-                "Hostname": dev_list[i].host,
-                "battery": np.random.randint(1,100),
-                "cpu": np.random.randint(1,100),
-                "memory": np.random.randint(1,100),
-                "storage": np.random.randint(1,100),
+        for i in range(0, info_num):
+            # Split the result string into dictionary data
+            result_list = info_list[i].value_list.split(";")
+            dict_data = {
+                "index": (i+1),
+                "deviceID": info_list[i].deviceID
             }
-            items.append(item)
+            for item in result_list:
+                for key in config_list:
+                    if key in item:
+                        value = item[len(key)+1:]
+                        if value.isnumeric():
+                            dict_data[key] = int(value)
+                        else:
+                            dict_data[key] = value
+            items.append(dict_data)                 
 
         data["items"] = items
         result = json.dumps(data, indent=4)
+        print(result)
 
         return data
