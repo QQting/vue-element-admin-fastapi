@@ -47,7 +47,7 @@
           <span>{{ row.Model }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="IP adress" width="110px" align="center">
+      <el-table-column label="IP address" width="110px" align="center">
         <template #default="{row}">
           <span>{{ row.IP }}</span>
         </template>
