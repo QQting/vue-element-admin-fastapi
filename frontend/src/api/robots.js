@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 export function fetchRobotList(query) {
   return request({
-    url: '/robots/list',
+    url: '/robots/discovery',
     method: 'get',
     params: query
   })

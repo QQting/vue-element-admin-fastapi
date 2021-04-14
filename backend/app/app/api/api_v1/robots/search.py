@@ -13,7 +13,7 @@ import subprocess
 
 router = APIRouter()
 
-def search():
+def rmt_discovery():
     rmt_py_wrapper.rmt_server_init()
 
     num_ptr = rmt_py_wrapper.new_intptr()
@@ -48,9 +48,9 @@ def search():
     return data
 
 
-@router.get("/list", response_model=schemas.Response)
-def get_robots_list(title: Optional[str] = None, db: Session = Depends(deps.get_db)) -> Any:
-    robot_data = search()
+@router.get("/discovery", response_model=schemas.Response)
+def get_robots_list() -> Any:
+    robot_data = rmt_discovery()
     return {"code": 20000, "data": robot_data}
 
 def wifi_ap_init():

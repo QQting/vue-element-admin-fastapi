@@ -22,7 +22,7 @@ for (let i = 1; i <= count; i++) {
 
 module.exports = [
   {
-    url: '/robots/list',
+    url: '/robots/discovery',
     type: 'get',
     response: config => {
       const { type, title, page = 1, limit = 20, sort } = config.query
