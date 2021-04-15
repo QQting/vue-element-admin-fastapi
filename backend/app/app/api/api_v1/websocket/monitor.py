@@ -72,7 +72,7 @@ class ServerNamespace(socketio.AsyncNamespace):
         while background_task_started:
             sys_info = await self.hardware_info()
             await self.emit('monitor_robot', sys_info)
-            await self.server.sleep(5)
+            await self.server.sleep(3)
 
     async def hardware_info(self):
         rmt_py_wrapper.rmt_server_init()

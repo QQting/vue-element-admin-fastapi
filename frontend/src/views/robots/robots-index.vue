@@ -37,7 +37,7 @@
           <span>{{ row.DeviceID }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="Hostname" width="110px" align="center">
+      <el-table-column label="Hostname" width="130px" align="center">
         <template #default="{row}">
           <span>{{ row.Hostname }}</span>
         </template>
@@ -47,7 +47,7 @@
           <span>{{ row.Model }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="IP address" width="110px" align="center">
+      <el-table-column label="IP address" width="130px" align="center">
         <template #default="{row}">
           <span>{{ row.IP }}</span>
         </template>
@@ -101,14 +101,14 @@
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-tabs>
-        <el-tab-pane label="Config" name="Config">Robot Parameters
-          <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px; margin-top:20px">
-            <el-form-item label="Network">
-              <el-input v-model="temp.Network" />
+        <el-tab-pane label="General" name="Config">General Settings
+          <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="90px" style="width: 400px; margin-left:50px; margin-top:20px">
+            <el-form-item label="Hostname">
+              <el-input v-model="temp.Hostname" />
             </el-form-item>
           </el-form>
         </el-tab-pane>
-        <el-tab-pane label="WiFi" name="WiFi">WiFi Setting
+        <el-tab-pane label="WiFi" name="WiFi">WiFi Settings
           <el-form ref="dataForm" :model="wifi_client" label-position="left" label-width="90px" style="width: 400px; margin-left:50px; margin-top:20px">
             <el-form-item label="SSID">
               <el-input v-model="wifi_client.ssid" />

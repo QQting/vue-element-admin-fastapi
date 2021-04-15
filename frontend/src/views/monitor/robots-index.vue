@@ -1,12 +1,5 @@
 <template>
   <div class="app-container">
-
-    <div class="filter-container">
-      <el-button class="filter-item" type="primary" icon="el-icon-search" @click="todo()">
-        Search
-      </el-button>
-    </div>
-
     <el-table
       ref="multipleTable"
       :key="tableKey"
@@ -38,19 +31,19 @@
           <el-progress :percentage="row.cpu" :color="usageColorMethod" />
         </template>
       </el-table-column>
-      <el-table-column label="Storage" width="160px" align="center">
+      <el-table-column label="Disk Usage" width="160px" align="center">
         <template #default="{row}">
           <el-progress :percentage="row.storage" :color="usageColorMethod" />
         </template>
       </el-table-column>
-      <el-table-column label="Memory" width="160px" align="center">
+      <el-table-column label="RAM Usage" width="160px" align="center">
         <template #default="{row}">
           <el-progress :percentage="row.ram" :color="usageColorMethod" />
         </template>
       </el-table-column>
-      <el-table-column label="Battery" width="160px" align="center">
+      <el-table-column label="Battery Level" width="160px" align="center">
         <template #default="{row}">
-          <el-progress :percentage="row.battery" :color="batteryColorMethod" />
+          <el-progress :percentage="99" :color="batteryColorMethod" />
         </template>
       </el-table-column>
     </el-table>
