@@ -33,7 +33,7 @@
       </el-table-column>
       <el-table-column label="Disk Usage" width="160px" align="center">
         <template #default="{row}">
-          <el-progress :percentage="row.storage" :color="usageColorMethod" />
+          <el-progress :percentage="50" :color="usageColorMethod" />
         </template>
       </el-table-column>
       <el-table-column label="RAM Usage" width="160px" align="center">
