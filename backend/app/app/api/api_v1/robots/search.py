@@ -54,7 +54,7 @@ def get_robots_list() -> Any:
     return {"code": 20000, "data": robot_data}
 
 def wifi_ap_init():
-    result = subprocess.run(["nmcli", "con", "add", "type", "wifi", "con-name",
+    result = subprocess.run(["nmcli", "con", "add", "type", "wifi", "autoconnect", "FALSE", "con-name",
                             "RMTHost", "ssid", "RMTHost"], stdout=subprocess.PIPE)
     result = subprocess.run(["nmcli", "con", "modify", "RMTHost", "802-11-wireless.mode", "ap", "802-11-wireless.band",
                             "bg", "ipv4.method", "shared"], stdout=subprocess.PIPE)

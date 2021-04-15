@@ -69,10 +69,11 @@ class TestWifiGetRequest:
         assert user_data[config_name]
 
     def test_default_wifi(self, client: TestClient, superuser_token_headers: Dict[str, str], default_wifi_data):
+        if "RMTHost.nmconnection" in os.listdir("/etc/NetworkManager/system-connections"):
             result = subprocess.run(["nmcli", "con", "delete", "RMTHost"], stdout=subprocess.PIPE)
-            response = client.get(
-                "/robots/wifi-init", headers=superuser_token_headers)
-            assert response.json()["data"] == default_wifi_data
+        response = client.get(
+            "/robots/wifi-init", headers=superuser_token_headers)
+        assert response.json()["data"] == default_wifi_data
 
 class TestWifiPostRequest:
     @pytest.fixture(scope="class", params=[(33,100,8,32), (1,32,0,7), (1,32,33,100)], ids=["ssid_over","pwd_short","pwd_over"])
@@ -86,12 +87,14 @@ class TestWifiPostRequest:
         result = subprocess.run(["nmcli", "con", "delete", "RMTHost"], stdout=subprocess.PIPE)
         response = client.post("/robots/wifi", headers=superuser_token_headers, json=default_wifi_data)
 
-    @pytest.fixture(scope="class")
-    def post_response(self, client: TestClient, superuser_token_headers: Dict[str, str]):
+    @pytest.fixture(scope="function", params=[True, False], ids=["init","exist"])
+    def post_response(self, request, client: TestClient, superuser_token_headers: Dict[str, str]):
+        if "RMTHost.nmconnection" in os.listdir("/etc/NetworkManager/system-connections") and request.param:
+            result = subprocess.run(["nmcli", "con", "delete", "RMTHost"], stdout=subprocess.PIPE)
         test_set = {"ssid": str_generator(size=random.randint(1, 32)),
                     "password": str_generator(size=random.randint(8, 32)),
                     "band": "2.4 GHz",
-                    "mode_on": False}
+                    "mode_on": request.param}
         response = client.post("/robots/wifi", headers=superuser_token_headers, json=test_set)
         return response
 
