@@ -72,7 +72,8 @@ root:[vue-element-admin-fastapi]
     git clone https://github.com/QQting/vue-element-admin-fastapi.git
 
     cd $HOME/vue-element-admin-fastapi/backend/app
-    sudo pip3 install -r requirements.txt
+    curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+    poetry install
 
     cd $HOME/vue-element-admin-fastapi/frontend
     npm install
