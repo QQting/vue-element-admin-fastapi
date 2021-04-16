@@ -4,24 +4,20 @@
       ref="multipleTable"
       :key="tableKey"
       v-loading="listLoading"
+      :default-sort="{prop: 'deviceID', order: 'ascending'}"
       :data="list"
       stripe
       fit
       highlight-current-row
       style="width: 100%;"
-      @sort-change="sortChange"
     >
-      <el-table-column label="Index" prop="Index" sortable align="center" width="80" :class-name="getSortClass('Index')">
-        <template #default="{row}">
-          <span>{{ row.index }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="Device ID" width="110px" align="center">
+      <el-table-column label="Index" type="index" align="center" width="80" />
+      <el-table-column label="Device ID" prop="deviceID" sortable :sort-orders="['ascending', 'descending']" width="110px" align="center">
         <template #default="{row}">
           <span>{{ row.deviceID }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="Hostname" width="110px" align="center">
+      <el-table-column label="Hostname" width="130px" align="center">
         <template #default="{row}">
           <span>{{ row.hostname }}</span>
         </template>
@@ -63,16 +59,14 @@ export default {
     return {
       tableKey: 0,
       percentage: 0,
-      list: null,
+      list: [],
       total: 0,
       isIndeterminate: true,
       listLoading: true,
       listQuery: {
         page: 1,
-        limit: 20,
-        sort: '+Index'
+        limit: 20
       },
-      sortOptions: [{ label: 'Index Ascending', key: '+Index' }, { label: 'Index Descending', key: '-Index' }],
       temp: {
         index: undefined
       },
@@ -96,30 +90,6 @@ export default {
         _this.total = data.total
         _this.listLoading = false
       })
-    },
-    handleFilter() {
-      this.listQuery.page = 1
-    },
-    sortChange(data) {
-      const { prop, order } = data
-      if (prop === 'Index') {
-        this.sortByIndex(order)
-      }
-    },
-    sortByIndex(order) {
-      if (order === 'ascending') {
-        this.listQuery.sort = '+Index'
-        this.handleFilter()
-      } else if (order === 'descending') {
-        this.listQuery.sort = '-Index'
-        this.handleFilter()
-      } else {
-        // order === 'null', do nothing
-      }
-    },
-    getSortClass: function(key) {
-      const sort = this.listQuery.sort
-      return sort === `+${key}` ? 'ascending' : 'descending'
     },
     usageColorMethod(percentage) {
       if (percentage < 30) {

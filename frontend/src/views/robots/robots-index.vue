@@ -18,21 +18,17 @@
       ref="multipleTable"
       :key="tableKey"
       v-loading="listLoading"
+      :default-sort="{prop: 'DeviceID', order: 'ascending'}"
       :data="list"
       stripe
       fit
       highlight-current-row
       style="width: 100%;"
-      @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" align="center" />
-      <el-table-column label="Index" prop="Index" sortable align="center" width="80" :class-name="getSortClass('Index')">
-        <template #default="{row}">
-          <span>{{ row.Index }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="Device ID" width="110px" align="center">
+      <el-table-column label="Index" type="index" align="center" width="80" />
+      <el-table-column label="Device ID" prop="DeviceID" sortable :sort-orders="['ascending', 'descending']" width="110px" align="center">
         <template #default="{row}">
           <span>{{ row.DeviceID }}</span>
         </template>
@@ -145,28 +141,10 @@ export default {
   name: 'ComplexTable',
   components: { Pagination, UploadExcelComponent, ControlComponent, WifiModeComponent },
   directives: { waves },
-  filters: {
-    // statusFilter(status) {
-    //   const statusMap = {
-    //     Active: 'success',
-    //     Inactive: 'danger'
-    //   }
-    //   return statusMap[status]
-    // },
-    // batteryFilter(battery) {
-    //   var tag_val = 'success'
-    //   if (battery < 10) {
-    //     tag_val = 'danger'
-    //   } else if (battery < 20) {
-    //     tag_val = 'warning'
-    //   }
-    //   return tag_val
-    // }
-  },
   data() {
     return {
       tableKey: 0,
-      list: null,
+      list: [],
       total: 0,
       multipleSelection: [],
       downloadLoading: false,
@@ -178,8 +156,7 @@ export default {
       listLoading: true,
       listQuery: {
         page: 1,
-        limit: 20,
-        sort: '+Index'
+        limit: 20
       },
       wifi_set: {
         ssid: '',
@@ -192,7 +169,6 @@ export default {
         password: ''
       },
       temp_wifi: {},
-      sortOptions: [{ label: 'Index Ascending', key: '+Index' }, { label: 'Index Descending', key: '-Index' }],
       temp: {
         index: undefined
       },
@@ -221,36 +197,11 @@ export default {
       fetchRobotList(this.listQuery).then(response => {
         this.list = response.data.items
         this.total = response.data.total
-
-        // Just to simulate the time of the request
-        setTimeout(() => {
-          this.listLoading = false
-        }, 1.5 * 1000)
+        this.listLoading = false
       })
       fetchWifi().then(response => {
         this.wifi_set = response.data
       })
-    },
-    handleFilter() {
-      this.listQuery.page = 1
-      this.getList()
-    },
-    sortChange(data) {
-      const { prop, order } = data
-      if (prop === 'Index') {
-        this.sortByIndex(order)
-      }
-    },
-    sortByIndex(order) {
-      if (order === 'ascending') {
-        this.listQuery.sort = '+Index'
-        this.handleFilter()
-      } else if (order === 'descending') {
-        this.listQuery.sort = '-Index'
-        this.handleFilter()
-      } else {
-        // order === 'null', do nothing
-      }
     },
     handleSelectionChange(val) {
       this.multipleSelection = val
@@ -333,19 +284,6 @@ export default {
           })
         }
       })
-    },
-    getSortClass: function(key) {
-      const sort = this.listQuery.sort
-      return sort === `+${key}` ? 'ascending' : 'descending'
-    },
-    percentageColorMethod(percentage) {
-      if (percentage < 70) {
-        return '#909399'
-      } else if (percentage < 90) {
-        return '#e6a23c'
-      } else {
-        return '#f56c6c'
-      }
     },
     beforeUpload(file) {
       const isLt1M = file.size / 1024 / 1024 < 1
