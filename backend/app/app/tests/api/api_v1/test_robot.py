@@ -2,7 +2,6 @@ from typing import Dict
 from fastapi.testclient import TestClient
 from app.api.api_v1.robots.RMT_core import rmt_py_wrapper
 from app.core.config import settings
-from app.main import app
 import os
 import pytest
 import subprocess
@@ -87,7 +86,7 @@ class TestWifiPostRequest:
         result = subprocess.run(["nmcli", "con", "delete", "RMTHost"], stdout=subprocess.PIPE)
         response = client.post("/robots/wifi", headers=superuser_token_headers, json=default_wifi_data)
 
-    @pytest.fixture(scope="function", params=[True, False], ids=["init","exist"])
+    @pytest.fixture(scope="class", params=[True, False], ids=["init","exist"])
     def post_response(self, request, client: TestClient, superuser_token_headers: Dict[str, str]):
         if "RMTHost.nmconnection" in os.listdir("/etc/NetworkManager/system-connections") and request.param:
             result = subprocess.run(["nmcli", "con", "delete", "RMTHost"], stdout=subprocess.PIPE)
