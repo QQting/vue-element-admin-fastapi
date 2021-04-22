@@ -104,14 +104,13 @@ vue-element-admin-fastapi/backend/app/app/celery_app/celery_app.py
 frontend:
 ```bash
 cd $HOME/vue-element-admin-fastapi/frontend
-npm run dev
+./start_frontend.sh
 ```
 
 backend:
 ```bash
-cd $HOME/vue-element-admin-fastapi/backend/app/app
-export LD_LIBRARY_PATH=$HOME/vue-element-admin-fastapi/backend/app/app/api/api_v1/robots/RMT_core
-python main.py
+cd $HOME/vue-element-admin-fastapi/backend
+./start_backend.sh
 ```
 
 ## Development SOP

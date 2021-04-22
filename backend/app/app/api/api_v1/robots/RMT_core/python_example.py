@@ -1,8 +1,16 @@
 #!/usr/bin/env python3
 import rmt_py_wrapper
 import json
+import sys, getopt
 
-def config(dev_list, dev_num):
+def usage():
+    print("Usage:")
+    print("\t-g | --get_config")
+    print("\t-s | --set_config")
+    print("Example:")
+    print("\t./python_example.py -gs")    
+
+def get_config(dev_list, dev_num):
     # Create config key string
     config_list = ["cpu", "ram", "hostname", "wifi"]
     config_key_str = ""
@@ -35,7 +43,59 @@ def config(dev_list, dev_num):
 
     return config_data
 
-def search():
+def set_config():
+    # Create data_info_array to set config
+    dev_num = 2
+    data_info_array = rmt_py_wrapper.new_data_info_array(dev_num)
+    
+    # Set for device 5566:
+    data_info_element = rmt_py_wrapper.data_info()
+    data_info_element.deviceID = 5566
+    data_info_element.value_list = "hostname:rqi-1234;locate:on"
+    dev_idx = 0
+    rmt_py_wrapper.data_info_array_setitem(data_info_array, dev_idx, data_info_element)
+
+    # Set for device 6166:
+    data_info_element.deviceID = 6166
+    data_info_element.value_list = "hostname:hacked_by_ting;locate:on"
+    dev_idx = 1
+    rmt_py_wrapper.data_info_array_setitem(data_info_array, dev_idx, data_info_element)
+
+    # Print what we want to set in data_info_array
+    print("=== set config req ===")
+    dev_idx = 0
+    data_info_element = rmt_py_wrapper.data_info_array_getitem(data_info_array, dev_idx)
+    print("deviceID=%d" % data_info_element.deviceID)
+    print("value_list=%s" % data_info_element.value_list)
+    dev_idx = 1
+    data_info_element = rmt_py_wrapper.data_info_array_getitem(data_info_array, dev_idx)
+    print("deviceID=%d" % data_info_element.deviceID)
+    print("value_list=%s" % data_info_element.value_list)
+
+    # Send data_info_array to RMT library
+    info_num_ptr = rmt_py_wrapper.new_intptr()
+    info_list = rmt_py_wrapper.data_info_list.frompointer(rmt_py_wrapper.rmt_server_set_info(data_info_array, dev_num, info_num_ptr))
+    info_num = rmt_py_wrapper.intptr_value(info_num_ptr)
+    rmt_py_wrapper.delete_intptr(info_num_ptr) # release info_num_ptr
+
+    print("=== set config result ===")
+    config_data = []
+    for i in range(0, info_num):
+        # Split the result string into dictionary data
+        result_list = info_list[i].value_list.split(";")
+        dict_data = {"deviceID": info_list[i].deviceID}
+        for item in result_list:
+            key_value_pair = item.split(":")
+            if len(key_value_pair) > 1:
+                key = key_value_pair[0]
+                value = key_value_pair[1]
+                dict_data[key] = value
+        # print(dict_data)
+        config_data.append(dict_data)
+    result = json.dumps(config_data, indent=4)
+    print(result)
+
+def discover():
     rmt_py_wrapper.rmt_server_init()
 
     num_ptr = rmt_py_wrapper.new_intptr()
@@ -57,16 +117,47 @@ def search():
         }
         items.append(item)
 
-    print("=== search result ===")
+    print("=== discover result ===")
     data["items"] = items
     result = json.dumps(data, indent=4)
     print(result)
     return dev_list, num
 
-def main():
+def main(args):
+    try:
+        opts, args = getopt.getopt(args, "hgs", ["help", "get_config", "set_config"])
+    except getopt.GetoptError as err:
+        # print help information and exit:
+        print(err)  # will print something like "option -a not recognized"
+        usage()
+        sys.exit(2)
+    flag_get_config = False
+    flag_set_config = False
+    for o, a in opts:
+        if o in ("-h", "--help"):
+            usage()
+            sys.exit()
+        elif o in ("-g", "--get_config"):
+            flag_get_config = True
+        elif o in ("-s", "--set_config"):
+            flag_set_config = True
+        else:
+            assert False, "unhandled option"    
+
+    # Get RMT_VERSION
     print("RMT_VERSION=%s" % rmt_py_wrapper.rmt_server_version())
-    dev_list, num = search()
-    config(dev_list, num)
+
+    # Discovery devices
+    dev_list, num = discover()
+
+    # Get config
+    if flag_get_config:
+        get_config(dev_list, num)
+
+    # Set config
+    if flag_set_config:
+        set_config()
 
 if __name__ == "__main__":
-    main()
+    args = sys.argv[1:]
+    main(args)

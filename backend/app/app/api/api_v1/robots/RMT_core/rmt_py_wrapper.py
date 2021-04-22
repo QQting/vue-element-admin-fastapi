@@ -78,6 +78,7 @@ class device_info(object):
 # Register device_info in _rmt_py_wrapper:
 _rmt_py_wrapper.device_info_swigregister(device_info)
 
+CONFIG_KEY_STR_LEN = _rmt_py_wrapper.CONFIG_KEY_STR_LEN
 class data_info(object):
     thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc="The membership flag")
     __repr__ = _swig_repr
@@ -107,11 +108,11 @@ def rmt_server_free_device_list(dev):
 def rmt_server_get_info(id_list, id_num, key_list, info_num):
     return _rmt_py_wrapper.rmt_server_get_info(id_list, id_num, key_list, info_num)
 
-def rmt_server_free_info(info_list, info_num):
-    return _rmt_py_wrapper.rmt_server_free_info(info_list, info_num)
+def rmt_server_free_info(info_list):
+    return _rmt_py_wrapper.rmt_server_free_info(info_list)
 
-def rmt_server_set_info(dev_list, dev_num):
-    return _rmt_py_wrapper.rmt_server_set_info(dev_list, dev_num)
+def rmt_server_set_info(dev_list, dev_num, info_num):
+    return _rmt_py_wrapper.rmt_server_set_info(dev_list, dev_num, info_num)
 
 def rmt_server_send_file(filename, pFile, file_len):
     return _rmt_py_wrapper.rmt_server_send_file(filename, pFile, file_len)
@@ -139,6 +140,18 @@ def intptr_assign(obj, value):
 
 def intptr_value(obj):
     return _rmt_py_wrapper.intptr_value(obj)
+
+def new_data_info_array(nelements):
+    return _rmt_py_wrapper.new_data_info_array(nelements)
+
+def delete_data_info_array(ary):
+    return _rmt_py_wrapper.delete_data_info_array(ary)
+
+def data_info_array_getitem(ary, index):
+    return _rmt_py_wrapper.data_info_array_getitem(ary, index)
+
+def data_info_array_setitem(ary, index, value):
+    return _rmt_py_wrapper.data_info_array_setitem(ary, index, value)
 class device_info_list(object):
     thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc="The membership flag")
     __repr__ = _swig_repr
