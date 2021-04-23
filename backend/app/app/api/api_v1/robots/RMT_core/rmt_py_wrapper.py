@@ -114,6 +114,9 @@ def rmt_server_free_info(info_list):
 def rmt_server_set_info(dev_list, dev_num, info_num):
     return _rmt_py_wrapper.rmt_server_set_info(dev_list, dev_num, info_num)
 
+def rmt_server_set_info_with_same_value(id_list, id_num, value_list, info_num):
+    return _rmt_py_wrapper.rmt_server_set_info_with_same_value(id_list, id_num, value_list, info_num)
+
 def rmt_server_send_file(filename, pFile, file_len):
     return _rmt_py_wrapper.rmt_server_send_file(filename, pFile, file_len)
 
