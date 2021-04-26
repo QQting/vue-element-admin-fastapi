@@ -52,7 +52,10 @@ export default {
       type: Boolean,
       default: false
     },
-    config: Object
+    config: {
+      type: Object,
+      default: () => {}
+    }
   },
   data() {
     return {

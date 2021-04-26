@@ -47,7 +47,10 @@ export default {
       type: Boolean,
       default: false
     },
-    wifiSet: Object
+    wifiSet: {
+      type: Object,
+      default: () => {}
+    }
   },
   data() {
     return {

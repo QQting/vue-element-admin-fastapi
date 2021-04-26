@@ -175,21 +175,15 @@ export default {
       dialogFormVisible: false,
       panel_on_control: false,
       panel_on_wifi: false,
-      dialogStatus: '',
-      percentage: 0,
-      textMap: {
-        update: 'Edit',
-        create: 'Create'
-      },
-      rules: {
-        // type: [{ required: true, message: 'type is required', trigger: 'change' }],
-        // timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
-        // title: [{ required: true, message: 'title is required', trigger: 'blur' }]
-      }
+      default_tab: 'Config',
+      rules: {}
     }
   },
   created() {
     this.getList()
+    fetchWifi().then(response => {
+      this.wifi_set = response.data
+    })
   },
   methods: {
     getList() {
@@ -199,13 +193,14 @@ export default {
         this.total = response.data.total
         this.listLoading = false
       })
-      fetchWifi().then(response => {
-        this.wifi_set = response.data
-      })
     },
+
+    // Handle agents selection in table
     handleSelectionChange(val) {
       this.multipleSelection = val
     },
+
+    // Handle parameter checkbox
     handleCheckAllChange(val) {
       this.checkedParams = val ? this.ParamOption : []
       this.isIndeterminate = false
@@ -215,6 +210,8 @@ export default {
       this.checkAll = checkedCount === this.ParamOption.length
       this.isIndeterminate = checkedCount > 0 && checkedCount < this.ParamOption.length
     },
+
+    // Function for downloading configuration as excel file
     handleDownload() {
       if (this.multipleSelection.length) {
         this.ParamOption = Object.keys(this.list[0])
@@ -245,14 +242,7 @@ export default {
       })
     },
 
-    handleUpdate(row) {
-      this.temp = Object.assign({}, row) // copy obj
-      this.dialogStatus = 'update'
-      this.dialogFormVisible = true
-      this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
-      })
-    },
+    // Function for control component
     handlecontrol(row) {
       this.temp = Object.assign({}, row) // copy obj
       this.panel_on_control = true
@@ -260,12 +250,23 @@ export default {
     dialogShowControl(val) {
       this.panel_on_control = val
     },
+
+    // Function for wifi ap mode component
     dialogShowWifi(val) {
       if (val) { this.temp_wifi = Object.assign({}, this.wifi_set) }
       this.panel_on_wifi = val
     },
-    syncData() {
+    syncWifi() {
       this.wifi_set = Object.assign({}, this.temp_wifi)
+    },
+
+    // Send request for config edit panel and update table
+    handleUpdate(row) {
+      this.temp = Object.assign({}, row) // copy obj
+      this.dialogFormVisible = true
+      this.$nextTick(() => {
+        this.$refs['dataForm'].clearValidate()
+      })
     },
     updateData() {
       this.$refs['dataForm'].validate((valid) => {
@@ -285,17 +286,17 @@ export default {
         }
       })
     },
+
+    // File check for import excel and update table
     beforeUpload(file) {
       const isLt1M = file.size / 1024 / 1024 < 1
       if (isLt1M) {
         return true
       }
-
       this.$message({
         message: 'Please do not upload files larger than 1m in size.',
         type: 'warning'
       })
-
       return false
     },
     handleSuccess({ results, header }) {
