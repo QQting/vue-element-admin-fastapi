@@ -124,8 +124,14 @@
         </el-button>
       </div>
     </el-dialog>
-    <control-component :dialog-show="panel_on_control" :config="temp" @dialogShowChange="dialogShowControl" />
-    <wifi-mode-component :dialog-show="panel_on_wifi" :wifi-set="temp_wifi" @dialogShowChange="dialogShowWifi" @syncData="syncData" />
+    <control-component
+      :dialog-show="panel_on_control"
+      :config="temp"
+      :locate="locate_list[temp.Index-1]"
+      @dialogShowChange="dialogShowControl"
+      @syncData="syncLocate"
+    />
+    <wifi-mode-component :dialog-show="panel_on_wifi" :wifi-set="temp_wifi" @dialogShowChange="dialogShowWifi" @syncData="syncWifi" />
   </div>
 </template>
 
@@ -172,6 +178,7 @@ export default {
       temp: {
         index: undefined
       },
+      locate_list: [],
       dialogFormVisible: false,
       panel_on_control: false,
       panel_on_wifi: false,
@@ -191,6 +198,7 @@ export default {
       fetchRobotList(this.listQuery).then(response => {
         this.list = response.data.items
         this.total = response.data.total
+        this.locate_list = Array(this.total).fill('off')
         this.listLoading = false
       })
     },
@@ -246,6 +254,9 @@ export default {
     handlecontrol(row) {
       this.temp = Object.assign({}, row) // copy obj
       this.panel_on_control = true
+    },
+    syncLocate(val) {
+      this.locate_list[this.temp.Index - 1] = val
     },
     dialogShowControl(val) {
       this.panel_on_control = val

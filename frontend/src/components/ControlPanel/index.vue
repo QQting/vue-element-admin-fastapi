@@ -2,38 +2,32 @@
   <div>
     <el-dialog title="Control Panel" :visible.sync="dialogFormVisible" @close="closeDialog">
       <el-form ref="dataForm" :model="config" label-position="left" label-width="90px" style="width: 400px; margin-left:50px;">
-        <el-form-item label="Hostname">
-          <el-input v-model="config.Hostname" :disabled="true" />
-        </el-form-item>
         <el-form-item label="Robot ID">
           <el-input v-model="config.DeviceID" :disabled="true" />
         </el-form-item>
-      </el-form>
-
-      <el-row>
-        <el-select v-model="value" placeholder="Select" style="margin-left:50px;">
-          <el-option
-            v-for="item in options"
-            :key="item"
-            :label="item"
-            :value="item"
+        <el-form-item label="Hostname">
+          <el-input v-model="config.Hostname" :disabled="true" />
+        </el-form-item>
+        <el-row style="margin-top:20px">
+          <el-switch
+            v-model="locate_switch"
+            active-text="ON"
+            inactive-text="OFF"
+            active-value="on"
+            inactive-value="off"
           />
-        </el-select>
-        <el-button type="primary" style="width: 100px" @click="setled()">
-          Set LED
-        </el-button>
-      </el-row>
-
-      <el-row>
-        <el-button style="width: 100px; margin-left:50px; margin-top:20px" @click="todo()">
-          Locate
-        </el-button>
-      </el-row>
-      <el-tooltip effect="dark" content="WARN!! Reboot ROScube">
-        <el-button type="danger" style="width: 100px; margin-left:50px; margin-top:20px" @click="Reboot()">
-          Reboot
-        </el-button>
-      </el-tooltip>
+          <el-tooltip effect="light" content="Find ROScube with flashing LED">
+            <el-button :loading="wait_request" type="primary" style="width: 120px; margin-left:50px" @click="handleLocate()">
+              Locate
+            </el-button>
+          </el-tooltip>
+        </el-row>
+        <el-tooltip effect="dark" content="WARN!! Reboot ROScube">
+          <el-button type="danger" style="width: 120px; margin-top:50px" @click="Reboot()">
+            Reboot
+          </el-button>
+        </el-tooltip>
+      </el-form>
 
       <div slot="footer" class="dialog-footer">
         <el-button @click="closeDialog">
@@ -45,9 +39,14 @@
 </template>
 
 <script>
+import { set_config_diff } from '@/api/robots'
 
 export default {
   props: {
+    locate: {
+      type: String,
+      default: 'off'
+    },
     dialogShow: {
       type: Boolean,
       default: false
@@ -60,13 +59,14 @@ export default {
   data() {
     return {
       dialogFormVisible: this.dialogShow,
-      options: ['Green', 'Red', 'Yellow'],
-      value: 'Yellow'
+      wait_request: false,
+      locate_switch: this.locate
     }
   },
   watch: {
     dialogShow(val) {
       this.dialogFormVisible = val
+      this.locate_switch = this.locate
     }
   },
   methods: {
@@ -78,11 +78,18 @@ export default {
         message: 'ROScube start reboot',
         type: 'warning'
       })
+      this.locate_switch = this.locate
     },
-    setled() {
-      this.$message({
-        message: 'LED color set',
-        type: 'success'
+    handleLocate() {
+      var locate_json = { 'device_config_json': { [this.config.DeviceID]: { 'locate': this.locate_switch }}}
+      this.wait_request = true
+      set_config_diff(locate_json).then(() => {
+        this.wait_request = false
+        this.$message({
+          message: 'ROSCube Locate Set',
+          type: 'success'
+        })
+        this.$emit('syncData', this.locate_switch)
       })
     }
   }
