@@ -95,10 +95,10 @@
       </div>
     </el-dialog>
 
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-tabs>
+    <el-dialog :visible.sync="dialogFormVisible">
+      <el-tabs :value="default_tab">
         <el-tab-pane label="General" name="Config">General Settings
-          <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="90px" style="width: 400px; margin-left:50px; margin-top:20px">
+          <el-form ref="dataForm" :model="temp" label-position="left" label-width="90px" style="width: 400px; margin-left:50px; margin-top:20px">
             <el-form-item label="Hostname">
               <el-input v-model="temp.Hostname" />
             </el-form-item>
@@ -119,7 +119,7 @@
         <el-button v-waves @click="dialogFormVisible = false">
           Cancel
         </el-button>
-        <el-button v-waves type="primary" @click="dialogStatus==='create'?createData():updateData()">
+        <el-button v-waves :loading="wait_request" type="primary" @click="updateData()">
           Confirm
         </el-button>
       </div>
@@ -136,7 +136,7 @@
 </template>
 
 <script>
-import { fetchRobotList, updateRobots, fetchWifi } from '@/api/robots'
+import { fetchRobotList, set_config_diff, fetchWifi } from '@/api/robots'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import UploadExcelComponent from '@/components/UploadExcel/index_robot.vue'
@@ -160,6 +160,7 @@ export default {
       checkedParams: [],
       isIndeterminate: true,
       listLoading: true,
+      wait_request: false,
       listQuery: {
         page: 1,
         limit: 20
@@ -282,10 +283,13 @@ export default {
     updateData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          const tempData = Object.assign({}, this.temp)
-          updateRobots(tempData).then(() => {
-            const index = this.list.findIndex(v => v.index === this.temp.index)
+          this.wait_request = true
+          var tempData = { 'device_config_json': { [this.temp.DeviceID]: {}}}
+          tempData['device_config_json'][this.temp.DeviceID]['hostname'] = this.temp.Hostname
+          set_config_diff(tempData).then(() => {
+            const index = this.list.findIndex(v => v.DeviceID === this.temp.DeviceID)
             this.list.splice(index, 1, this.temp)
+            this.wait_request = false
             this.dialogFormVisible = false
             this.$notify({
               title: 'Success',
@@ -311,15 +315,20 @@ export default {
       return false
     },
     handleSuccess({ results, header }) {
-      for (var index in results) {
-        if (parseInt(index + 1, 10) > this.list.length) {
-          this.list.push(results[index])
-          continue
-        }
-        for (var param in results[index]) {
-          this.list[index][param] = results[index][param]
-        }
-      }
+      this.listLoading = true
+      var tempData = { 'device_config_json': {}}
+      results.forEach((element) => {
+        tempData['device_config_json'] = { [element['DeviceID']]: { 'hostname': element['Hostname'] }}
+        var list_index = this.list.findIndex(agent => agent.DeviceID === element['DeviceID'])
+        this.list[list_index]['Hostname'] = element['Hostname']
+      })
+      set_config_diff(tempData).then(() => {
+        this.listLoading = false
+        this.$message({
+          message: 'Configuration import success',
+          type: 'success'
+        })
+      })
     }
   }
 }
