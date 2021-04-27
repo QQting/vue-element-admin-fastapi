@@ -112,28 +112,18 @@ def rmt_set_same_config_by_id(target_list, target_num, config_dict):
     for key, value in config_dict.items():
         config_str += key + ':' + value + ';'
 
-    # Create data_info_array to save configurations for each device
-    data_info_array = rmt_py_wrapper.new_data_info_array(target_num)
+    # Convert target_list to id_list
+    id_list = rmt_py_wrapper.ulong_array(target_num)
     for i in range (0, target_num):
-        data_info_element = rmt_py_wrapper.data_info()
-        data_info_element.deviceID = int(target_list[i])
-        data_info_element.value_list = config_str
-        rmt_py_wrapper.data_info_array_setitem(data_info_array, i, data_info_element)
+        id_list[i] = int(target_list[i])
 
-    # Print what we want to set in data_info_array
-    print("=== set config req ===")
-    for i in range (0, target_num):
-        data_info_element = rmt_py_wrapper.data_info_array_getitem(data_info_array, i)
-        print("deviceID=%d" % data_info_element.deviceID)
-        print("value_list=%s" % data_info_element.value_list)
-
-    # Send data_info_array to RMT library
+    # Send id_list and config_str to RMT library
     info_num_ptr = rmt_py_wrapper.new_intptr()
-    info_list = rmt_py_wrapper.data_info_list.frompointer(rmt_py_wrapper.rmt_server_set_info(data_info_array, target_num, info_num_ptr))
+    info_list = rmt_py_wrapper.data_info_list.frompointer(rmt_py_wrapper.rmt_server_set_info_with_same_value(id_list, target_num, config_str, info_num_ptr))
     info_num = rmt_py_wrapper.intptr_value(info_num_ptr)
     rmt_py_wrapper.delete_intptr(info_num_ptr) # release info_num_ptr
 
-    print("=== set config result ===")
+    print("=== set same config result ===")
     config_data = {}
     for i in range(0, info_num):
         # Split the result string into dictionary data
@@ -169,7 +159,7 @@ def rmt_set_diff_config_by_id(device_config_json):
         idx += 1
 
     # Print what we want to set in data_info_array
-    print("=== set config req ===")
+    print("=== set diff config req ===")
     for i in range (0, target_num):
         data_info_element = rmt_py_wrapper.data_info_array_getitem(data_info_array, i)
         print("deviceID=%d" % data_info_element.deviceID)
@@ -181,7 +171,7 @@ def rmt_set_diff_config_by_id(device_config_json):
     info_num = rmt_py_wrapper.intptr_value(info_num_ptr)
     rmt_py_wrapper.delete_intptr(info_num_ptr) # release info_num_ptr
 
-    print("=== set config result ===")
+    print("=== set diff config result ===")
     config_data = {}
     for i in range(0, info_num):
         # Split the result string into dictionary data
@@ -207,7 +197,7 @@ def rmt_discovery():
     rmt_py_wrapper.delete_intptr(num_ptr) # release num_ptr
     return dev_list, num
 
-@router.post("/get_config_for_all", response_model=schemas.Response)
+@router.get("/get_config_for_all", response_model=schemas.Response)
 def get_config_for_all(config_req_body: GetConfigForAll_ReqBody) -> Any:
     code = 40400 # not found for default
     dev_list, num = rmt_discovery()
@@ -220,7 +210,7 @@ def get_config_for_all(config_req_body: GetConfigForAll_ReqBody) -> Any:
     rmt_py_wrapper.rmt_server_deinit()
     return {"code": code, "data": data}
 
-@router.post("/get_same_config_by_id", response_model=schemas.Response)
+@router.get("/get_same_config_by_id", response_model=schemas.Response)
 def get_same_config_by_id(config_req_body: GetSameConfigById_ReqBody) -> Any:
     code = 40400 # not found for default
     rmt_py_wrapper.rmt_server_init()
@@ -241,7 +231,7 @@ def get_same_config_by_id(config_req_body: GetSameConfigById_ReqBody) -> Any:
 # def get_diff_config_by_id(config_req_body: GetDiffConfigById_ReqBody) -> Any:
 #     pass
 
-@router.post("/set_same_config_by_id", response_model=schemas.Response)
+@router.put("/set_same_config_by_id", response_model=schemas.Response)
 def set_same_config_by_id(config_req_body: SetSameConfigById_ReqBody) -> Any:
     code = 40400 # not found for default
     rmt_py_wrapper.rmt_server_init()
@@ -254,7 +244,7 @@ def set_same_config_by_id(config_req_body: SetSameConfigById_ReqBody) -> Any:
         code = 20000
     return {"code": code, "data": data}
 
-@router.post("/set_diff_config_by_id", response_model=schemas.Response)
+@router.put("/set_diff_config_by_id", response_model=schemas.Response)
 def set_diff_config_by_id(config_req_body: SetDiffConfigById_ReqBody) -> Any:
     code = 40400 # not found for default
     rmt_py_wrapper.rmt_server_init()
