@@ -8,9 +8,9 @@ export function fetchRobotList(query) {
   })
 }
 
-export function updateRobots(data) {
+export function set_config_diff(data) {
   return request({
-    url: '/robots/update',
+    url: '/robots/set_diff_config_by_id',
     method: 'post',
     data
   })

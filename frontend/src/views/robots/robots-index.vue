@@ -18,21 +18,17 @@
       ref="multipleTable"
       :key="tableKey"
       v-loading="listLoading"
+      :default-sort="{prop: 'DeviceID', order: 'ascending'}"
       :data="list"
       stripe
       fit
       highlight-current-row
       style="width: 100%;"
-      @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" align="center" />
-      <el-table-column label="Index" prop="Index" sortable align="center" width="80" :class-name="getSortClass('Index')">
-        <template #default="{row}">
-          <span>{{ row.Index }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="Device ID" width="110px" align="center">
+      <el-table-column label="Index" type="index" align="center" width="80" />
+      <el-table-column label="Device ID" prop="DeviceID" sortable :sort-orders="['ascending', 'descending']" width="110px" align="center">
         <template #default="{row}">
           <span>{{ row.DeviceID }}</span>
         </template>
@@ -99,10 +95,10 @@
       </div>
     </el-dialog>
 
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-tabs>
+    <el-dialog :visible.sync="dialogFormVisible">
+      <el-tabs :value="default_tab">
         <el-tab-pane label="General" name="Config">General Settings
-          <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="90px" style="width: 400px; margin-left:50px; margin-top:20px">
+          <el-form ref="dataForm" :model="temp" label-position="left" label-width="90px" style="width: 400px; margin-left:50px; margin-top:20px">
             <el-form-item label="Hostname">
               <el-input v-model="temp.Hostname" />
             </el-form-item>
@@ -123,18 +119,24 @@
         <el-button v-waves @click="dialogFormVisible = false">
           Cancel
         </el-button>
-        <el-button v-waves type="primary" @click="dialogStatus==='create'?createData():updateData()">
+        <el-button v-waves :loading="wait_request" type="primary" @click="updateData()">
           Confirm
         </el-button>
       </div>
     </el-dialog>
-    <control-component :dialog-show="panel_on_control" :config="temp" @dialogShowChange="dialogShowControl" />
-    <wifi-mode-component :dialog-show="panel_on_wifi" :wifi-set="temp_wifi" @dialogShowChange="dialogShowWifi" @syncData="syncData" />
+    <control-component
+      :dialog-show="panel_on_control"
+      :config="temp"
+      :locate="locate_list[temp.Index-1]"
+      @dialogShowChange="dialogShowControl"
+      @syncData="syncLocate"
+    />
+    <wifi-mode-component :dialog-show="panel_on_wifi" :wifi-set="temp_wifi" @dialogShowChange="dialogShowWifi" @syncData="syncWifi" />
   </div>
 </template>
 
 <script>
-import { fetchRobotList, updateRobots, fetchWifi } from '@/api/robots'
+import { fetchRobotList, set_config_diff, fetchWifi } from '@/api/robots'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import UploadExcelComponent from '@/components/UploadExcel/index_robot.vue'
@@ -145,28 +147,10 @@ export default {
   name: 'ComplexTable',
   components: { Pagination, UploadExcelComponent, ControlComponent, WifiModeComponent },
   directives: { waves },
-  filters: {
-    // statusFilter(status) {
-    //   const statusMap = {
-    //     Active: 'success',
-    //     Inactive: 'danger'
-    //   }
-    //   return statusMap[status]
-    // },
-    // batteryFilter(battery) {
-    //   var tag_val = 'success'
-    //   if (battery < 10) {
-    //     tag_val = 'danger'
-    //   } else if (battery < 20) {
-    //     tag_val = 'warning'
-    //   }
-    //   return tag_val
-    // }
-  },
   data() {
     return {
       tableKey: 0,
-      list: null,
+      list: [],
       total: 0,
       multipleSelection: [],
       downloadLoading: false,
@@ -176,10 +160,10 @@ export default {
       checkedParams: [],
       isIndeterminate: true,
       listLoading: true,
+      wait_request: false,
       listQuery: {
         page: 1,
-        limit: 20,
-        sort: '+Index'
+        limit: 20
       },
       wifi_set: {
         ssid: '',
@@ -192,28 +176,22 @@ export default {
         password: ''
       },
       temp_wifi: {},
-      sortOptions: [{ label: 'Index Ascending', key: '+Index' }, { label: 'Index Descending', key: '-Index' }],
       temp: {
         index: undefined
       },
+      locate_list: [],
       dialogFormVisible: false,
       panel_on_control: false,
       panel_on_wifi: false,
-      dialogStatus: '',
-      percentage: 0,
-      textMap: {
-        update: 'Edit',
-        create: 'Create'
-      },
-      rules: {
-        // type: [{ required: true, message: 'type is required', trigger: 'change' }],
-        // timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
-        // title: [{ required: true, message: 'title is required', trigger: 'blur' }]
-      }
+      default_tab: 'Config',
+      rules: {}
     }
   },
   created() {
     this.getList()
+    fetchWifi().then(response => {
+      this.wifi_set = response.data
+    })
   },
   methods: {
     getList() {
@@ -221,40 +199,17 @@ export default {
       fetchRobotList(this.listQuery).then(response => {
         this.list = response.data.items
         this.total = response.data.total
+        this.locate_list = Array(this.total).fill('off')
+        this.listLoading = false
+      })
+    },
 
-        // Just to simulate the time of the request
-        setTimeout(() => {
-          this.listLoading = false
-        }, 1.5 * 1000)
-      })
-      fetchWifi().then(response => {
-        this.wifi_set = response.data
-      })
-    },
-    handleFilter() {
-      this.listQuery.page = 1
-      this.getList()
-    },
-    sortChange(data) {
-      const { prop, order } = data
-      if (prop === 'Index') {
-        this.sortByIndex(order)
-      }
-    },
-    sortByIndex(order) {
-      if (order === 'ascending') {
-        this.listQuery.sort = '+Index'
-        this.handleFilter()
-      } else if (order === 'descending') {
-        this.listQuery.sort = '-Index'
-        this.handleFilter()
-      } else {
-        // order === 'null', do nothing
-      }
-    },
+    // Handle agents selection in table
     handleSelectionChange(val) {
       this.multipleSelection = val
     },
+
+    // Handle parameter checkbox
     handleCheckAllChange(val) {
       this.checkedParams = val ? this.ParamOption : []
       this.isIndeterminate = false
@@ -264,6 +219,8 @@ export default {
       this.checkAll = checkedCount === this.ParamOption.length
       this.isIndeterminate = checkedCount > 0 && checkedCount < this.ParamOption.length
     },
+
+    // Function for downloading configuration as excel file
     handleDownload() {
       if (this.multipleSelection.length) {
         this.ParamOption = Object.keys(this.list[0])
@@ -294,35 +251,45 @@ export default {
       })
     },
 
+    // Function for control component
+    handlecontrol(row) {
+      this.temp = Object.assign({}, row) // copy obj
+      this.panel_on_control = true
+    },
+    syncLocate(val) {
+      this.locate_list[this.temp.Index - 1] = val
+    },
+    dialogShowControl(val) {
+      this.panel_on_control = val
+    },
+
+    // Function for wifi ap mode component
+    dialogShowWifi(val) {
+      if (val) { this.temp_wifi = Object.assign({}, this.wifi_set) }
+      this.panel_on_wifi = val
+    },
+    syncWifi() {
+      this.wifi_set = Object.assign({}, this.temp_wifi)
+    },
+
+    // Send request for config edit panel and update table
     handleUpdate(row) {
       this.temp = Object.assign({}, row) // copy obj
-      this.dialogStatus = 'update'
       this.dialogFormVisible = true
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
     },
-    handlecontrol(row) {
-      this.temp = Object.assign({}, row) // copy obj
-      this.panel_on_control = true
-    },
-    dialogShowControl(val) {
-      this.panel_on_control = val
-    },
-    dialogShowWifi(val) {
-      if (val) { this.temp_wifi = Object.assign({}, this.wifi_set) }
-      this.panel_on_wifi = val
-    },
-    syncData() {
-      this.wifi_set = Object.assign({}, this.temp_wifi)
-    },
     updateData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          const tempData = Object.assign({}, this.temp)
-          updateRobots(tempData).then(() => {
-            const index = this.list.findIndex(v => v.index === this.temp.index)
+          this.wait_request = true
+          var tempData = { 'device_config_json': { [this.temp.DeviceID]: {}}}
+          tempData['device_config_json'][this.temp.DeviceID]['hostname'] = this.temp.Hostname
+          set_config_diff(tempData).then(() => {
+            const index = this.list.findIndex(v => v.DeviceID === this.temp.DeviceID)
             this.list.splice(index, 1, this.temp)
+            this.wait_request = false
             this.dialogFormVisible = false
             this.$notify({
               title: 'Success',
@@ -334,42 +301,34 @@ export default {
         }
       })
     },
-    getSortClass: function(key) {
-      const sort = this.listQuery.sort
-      return sort === `+${key}` ? 'ascending' : 'descending'
-    },
-    percentageColorMethod(percentage) {
-      if (percentage < 70) {
-        return '#909399'
-      } else if (percentage < 90) {
-        return '#e6a23c'
-      } else {
-        return '#f56c6c'
-      }
-    },
+
+    // File check for import excel and update table
     beforeUpload(file) {
       const isLt1M = file.size / 1024 / 1024 < 1
       if (isLt1M) {
         return true
       }
-
       this.$message({
         message: 'Please do not upload files larger than 1m in size.',
         type: 'warning'
       })
-
       return false
     },
     handleSuccess({ results, header }) {
-      for (var index in results) {
-        if (parseInt(index + 1, 10) > this.list.length) {
-          this.list.push(results[index])
-          continue
-        }
-        for (var param in results[index]) {
-          this.list[index][param] = results[index][param]
-        }
-      }
+      this.listLoading = true
+      var tempData = { 'device_config_json': {}}
+      results.forEach((element) => {
+        tempData['device_config_json'] = { [element['DeviceID']]: { 'hostname': element['Hostname'] }}
+        var list_index = this.list.findIndex(agent => agent.DeviceID === element['DeviceID'])
+        this.list[list_index]['Hostname'] = element['Hostname']
+      })
+      set_config_diff(tempData).then(() => {
+        this.listLoading = false
+        this.$message({
+          message: 'Configuration import success',
+          type: 'success'
+        })
+      })
     }
   }
 }

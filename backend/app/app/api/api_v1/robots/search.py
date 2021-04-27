@@ -1,6 +1,6 @@
 from typing import Any, Optional
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app import models, schemas
 from app.api import deps
@@ -54,13 +54,7 @@ def get_robots_list() -> Any:
     return {"code": 20000, "data": robot_data}
 
 def wifi_ap_init():
-    wifi_interface = ""
-    for interface in os.listdir('/sys/class/net'):
-        if "wireless" in os.listdir('/sys/class/net/' + interface):
-            wifi_interface = interface
-            break
-
-    result = subprocess.run(["nmcli", "con", "add", "type", "wifi", "ifname", str(wifi_interface), "con-name",
+    result = subprocess.run(["nmcli", "con", "add", "type", "wifi", "autoconnect", "FALSE", "con-name",
                             "RMTHost", "ssid", "RMTHost"], stdout=subprocess.PIPE)
     result = subprocess.run(["nmcli", "con", "modify", "RMTHost", "802-11-wireless.mode", "ap", "802-11-wireless.band",
                             "bg", "ipv4.method", "shared"], stdout=subprocess.PIPE)
@@ -68,23 +62,35 @@ def wifi_ap_init():
 
 def modify_ap_config(ssid, password, band):
     result = subprocess.run(["nmcli", "con", "modify", "RMTHost", "802-11-wireless.ssid", str(ssid)], stdout=subprocess.PIPE)
-    result = subprocess.run(["nmcli", "con", "modify", "RMTHost", "802-11-wireless-security.psk", str(password)], stdout=subprocess.PIPE)
     result = subprocess.run(["nmcli", "con", "modify", "RMTHost", "802-11-wireless.band", str(band)], stdout=subprocess.PIPE)
+    result = subprocess.run(["nmcli", "con", "modify", "RMTHost", "802-11-wireless-security.psk", str(password)], stdout=subprocess.PIPE)
+    return result
 
 @router.post("/wifi", response_model=schemas.Response)
-def wifi_callback(*, db: Session = Depends(deps.get_db), wifi_mode: schemas.WifiMode,) -> Any:
+def wifi_callback(*, wifi_mode: schemas.WifiMode,) -> Any:
     wifi_set = {"ssid": wifi_mode.ssid, "password": wifi_mode.password, "band": wifi_mode.band, "mode_on": wifi_mode.mode_on}
+    result = subprocess.run(["nmcli", "-t", "-f", "NAME", "con", "show", "--active"], stdout=subprocess.PIPE)
+    active_name = result.stdout.decode('utf-8').split("\n")
+    mode_on = "RMTHost" in active_name
+    band_code = {"2.4 GHz": "bg", "5 GHz": "a"}
+    #Create connection for the very first request
     if "RMTHost.nmconnection" not in os.listdir("/etc/NetworkManager/system-connections"):
         wifi_ap_init()
-    band_code = {"2.4 GHz": "bg", "5 GHz": "a"}
-    modify_ap_config(wifi_set["ssid"], wifi_set["password"], band_code[wifi_set["band"]])
+    #Exception for invalid property
+    if len(wifi_set["password"]) < 8 or len(wifi_set["password"]) > 32:
+        raise HTTPException(status_code=400, detail="Invalid property: Password")
+    if not wifi_set["ssid"] or len(wifi_set["ssid"]) > 32:
+        raise HTTPException(status_code=400, detail="Invalid property: SSID")
+    if wifi_set["band"] not in band_code:
+        raise HTTPException(status_code=400, detail="Invalid property: Band")
 
-    if wifi_set["mode_on"]:
-        result = subprocess.run(["nmcli", "con", "up", "RMTHost"], stdout=subprocess.PIPE)
-    else:
-        result = subprocess.run(["nmcli", "con", "down", "RMTHost"], stdout=subprocess.PIPE)
+    result = modify_ap_config(wifi_set["ssid"], wifi_set["password"], band_code[wifi_set["band"]])
 
-    return {"code": 20000, "data": {"status": "success"}}
+    if wifi_set["mode_on"] != mode_on:
+        con_stat = "up" if wifi_set["mode_on"] else "down"
+        result = subprocess.run(["nmcli", "con", str(con_stat), "RMTHost"], stdout=subprocess.PIPE)
+
+    return {"code": 20000, "data": result.stdout.decode('utf-8').rstrip("\n")}
 
 @router.get("/wifi-init", response_model=schemas.Response)
 def current_wifi():
