@@ -57,7 +57,7 @@ class TestGetConfig:
 
     @pytest.fixture(scope="class", autouse=True)
     def get_config_all(self, client: TestClient, superuser_token_headers: Dict[str, str], default_config_data):
-        response = client.post(
+        response = client.get(
             "/robots/get_config_for_all", headers=superuser_token_headers, json=default_config_data)
         return response
 
@@ -77,12 +77,12 @@ class TestGetConfig:
         config_data = {"device_list": [],"config_list": ["cpu","ram","hostname","wifi"]}
         for id in range(agent_start_id, agent_start_id+generate_agent):
             config_data["device_list"].append(str(id))
-            response = client.post(
+            response = client.get(
                 f"/robots/get_same_config_by_id", headers=superuser_token_headers, json=config_data)
             assert response.status_code == 200
     
     def test_faux_id(self, client: TestClient, superuser_token_headers: Dict[str, str], agent_start_id, faux_config_data):
-        response = client.post(
+        response = client.get(
             f"/robots/get_same_config_by_id", headers=superuser_token_headers, json=faux_config_data)
         with pytest.raises(AssertionError):
             assert response.json()["code"] == 20000
@@ -99,27 +99,27 @@ class TestSetConfig:
     def test_same_config(self, client: TestClient, superuser_token_headers: Dict[str, str], agent_start_id, generate_agent, set_config_data):
         for id in range(agent_start_id, agent_start_id+generate_agent):
             set_config_data["device_list"].append(str(id))
-            response = client.post(
+            response = client.put(
                 "/robots/set_same_config_by_id", headers=superuser_token_headers, json=set_config_data)
             assert response.json()["code"] == 20000
     
     def test_diff_config(self, client: TestClient, superuser_token_headers: Dict[str, str], agent_start_id, generate_agent, set_config_data_id):
         for id in range(agent_start_id, agent_start_id+generate_agent):
             set_config_data_id["device_config_json"][str(id)] = {"hostname": str_generator(size=random.randint(1, 32)), "locate": "off"}
-            response = client.post(
+            response = client.put(
                 "/robots/set_diff_config_by_id", headers=superuser_token_headers, json=set_config_data_id)
             assert response.json()["code"] == 20000
 
     def test_faux_same_config(self, client: TestClient, superuser_token_headers: Dict[str, str], agent_start_id, set_config_data):
         set_config_data["device_list"].append(str(agent_start_id+20))
-        response = client.post(
+        response = client.put(
                 "/robots/set_same_config_by_id", headers=superuser_token_headers, json=set_config_data)
         with pytest.raises(AssertionError):
             assert response.json()["code"] == 20000
     
     def test_faux_diff_config(self, client: TestClient, superuser_token_headers: Dict[str, str], agent_start_id, set_config_data_id):
         set_config_data_id["device_config_json"][str(agent_start_id+20)] = {"hostname": str_generator(size=random.randint(1, 32)), "locate": "off"}
-        response = client.post(
+        response = client.put(
             "/robots/set_diff_config_by_id", headers=superuser_token_headers, json=set_config_data_id)
         with pytest.raises(AssertionError):
             assert response.json()["code"] == 20000

@@ -11,7 +11,7 @@ export function fetchRobotList(query) {
 export function set_config_diff(data) {
   return request({
     url: '/robots/set_diff_config_by_id',
-    method: 'post',
+    method: 'put',
     data
   })
 }
