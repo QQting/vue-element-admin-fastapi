@@ -10,6 +10,7 @@ from app.api.api_v1.robots.RMT_core import rmt_py_wrapper
 import json
 import os 
 import subprocess
+import re
 from pydantic import BaseModel
 from typing import List, Dict
 
@@ -31,6 +32,13 @@ class SetDiffConfigById_ReqBody(BaseModel):
             "hostname": "ROScube-2",
             "locate": "on"            
         }
+    }
+
+class SetSequentialConfigById_ReqBody(BaseModel):
+    device_list: List[str] = ["5566", "5567", "5568", "5569"]
+    numbering_config_start: Dict[str, str] = {
+        "ip": "192.168.0.1",
+        "hostname": "roscube1"
     }
 
 class GetSameConfigById_ReqBody(BaseModel):
@@ -189,6 +197,59 @@ def rmt_set_diff_config_by_id(device_config_json):
     print(result)
     return config_data
 
+def rmt_set_seq_config_by_id(device_list, config_dict):
+    # Create data_info_array to save configurations for each device
+    target_num = len(device_list)
+    data_info_array = rmt_py_wrapper.new_data_info_array(target_num)
+
+    for i in range(0, target_num):
+        config_str = ""
+        # Increment config value for each loop
+        for key, value in config_dict.items():
+            if i > 0:
+                new_value = re.sub(r'[0-9]+$',
+                    lambda x: f"{str(int(x.group())+1).zfill(len(x.group()))}", 
+                    value)
+                value = new_value
+            config_str += key + ':' + value + ';'
+
+        # Save config data to data_info_array
+        data_info_element = rmt_py_wrapper.data_info()
+        data_info_element.deviceID = int(device_list[i])
+        data_info_element.value_list = config_str
+        rmt_py_wrapper.data_info_array_setitem(data_info_array, i, data_info_element)
+
+    # Print what we want to set in data_info_array
+    print("=== set sequential config req ===")
+    for i in range(0, target_num):
+        data_info_element = rmt_py_wrapper.data_info_array_getitem(data_info_array, i)
+        print("deviceID=%d" % data_info_element.deviceID)
+        print("value_list=%s" % data_info_element.value_list)
+
+    # Send data_info_array to RMT library
+    info_num_ptr = rmt_py_wrapper.new_intptr()
+    info_list = rmt_py_wrapper.data_info_list.frompointer(rmt_py_wrapper.rmt_server_set_info(data_info_array, target_num, info_num_ptr))
+    info_num = rmt_py_wrapper.intptr_value(info_num_ptr)
+    rmt_py_wrapper.delete_intptr(info_num_ptr) # release info_num_ptr
+
+    print("=== set sequential config result ===")
+    config_data = {}
+    for i in range(0, info_num):
+        # Split the result string into dictionary data
+        result_list = info_list[i].value_list.split(";")
+        device_dict = {}
+        device_id = info_list[i].deviceID
+        for item in result_list:
+            key_value_pair = item.split(":")
+            if len(key_value_pair) > 1:
+                key = key_value_pair[0]
+                value = key_value_pair[1]
+                device_dict[key] = value
+        config_data[device_id] = device_dict
+    result = json.dumps(config_data, indent=4)
+    print(result)
+    return config_data
+
 def rmt_discovery():
     rmt_py_wrapper.rmt_server_init()
     num_ptr = rmt_py_wrapper.new_intptr()
@@ -249,6 +310,18 @@ def set_diff_config_by_id(config_req_body: SetDiffConfigById_ReqBody) -> Any:
     code = 40400 # not found for default
     rmt_py_wrapper.rmt_server_init()
     data = rmt_set_diff_config_by_id(config_req_body.device_config_json)
+    if data:
+        # found => 200 OK
+        code = 20000
+    return {"code": code, "data": data}
+
+@router.put("/set_sequential_config_by_id", response_model=schemas.Response)
+def set_seq_config_by_id(config_req_body: SetSequentialConfigById_ReqBody) -> Any:
+    code = 40400 # not found for default
+    rmt_py_wrapper.rmt_server_init()
+    device_list = config_req_body.device_list
+    config_dict = config_req_body.numbering_config_start
+    data = rmt_set_seq_config_by_id(device_list, config_dict)
     if data:
         # found => 200 OK
         code = 20000
