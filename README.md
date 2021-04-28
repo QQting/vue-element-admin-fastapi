@@ -118,3 +118,10 @@ cd $HOME/vue-element-admin-fastapi/backend
 frontend:
 
 If you want to use mock, turn on '/mock-test' in the file ```.env.development```.
+
+Unit test for backend:
+
+```bash
+cd $HOME/vue-element-admin-fastapi/backend/app/app/tests/api/api_v1
+pytest-3 test_robot.py -s -v
+```
