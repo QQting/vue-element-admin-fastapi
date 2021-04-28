@@ -197,7 +197,7 @@ def rmt_discovery():
     rmt_py_wrapper.delete_intptr(num_ptr) # release num_ptr
     return dev_list, num
 
-@router.get("/get_config_for_all", response_model=schemas.Response)
+@router.post("/get_config_for_all", response_model=schemas.Response)
 def get_config_for_all(config_req_body: GetConfigForAll_ReqBody) -> Any:
     code = 40400 # not found for default
     dev_list, num = rmt_discovery()
@@ -210,7 +210,7 @@ def get_config_for_all(config_req_body: GetConfigForAll_ReqBody) -> Any:
     rmt_py_wrapper.rmt_server_deinit()
     return {"code": code, "data": data}
 
-@router.get("/get_same_config_by_id", response_model=schemas.Response)
+@router.post("/get_same_config_by_id", response_model=schemas.Response)
 def get_same_config_by_id(config_req_body: GetSameConfigById_ReqBody) -> Any:
     code = 40400 # not found for default
     rmt_py_wrapper.rmt_server_init()

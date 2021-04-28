@@ -57,7 +57,7 @@ class TestGetConfig:
 
     @pytest.fixture(scope="class", autouse=True)
     def get_config_all(self, client: TestClient, superuser_token_headers: Dict[str, str], default_config_data):
-        response = client.get(
+        response = client.post(
             "/robots/get_config_for_all", headers=superuser_token_headers, json=default_config_data)
         return response
 
@@ -77,12 +77,12 @@ class TestGetConfig:
         config_data = {"device_list": [],"config_list": ["cpu","ram","hostname","wifi"]}
         for id in range(agent_start_id, agent_start_id+generate_agent):
             config_data["device_list"].append(str(id))
-            response = client.get(
+            response = client.post(
                 f"/robots/get_same_config_by_id", headers=superuser_token_headers, json=config_data)
             assert response.status_code == 200
     
     def test_faux_id(self, client: TestClient, superuser_token_headers: Dict[str, str], agent_start_id, faux_config_data):
-        response = client.get(
+        response = client.post(
             f"/robots/get_same_config_by_id", headers=superuser_token_headers, json=faux_config_data)
         with pytest.raises(AssertionError):
             assert response.json()["code"] == 20000
