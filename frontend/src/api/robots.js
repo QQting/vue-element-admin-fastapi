@@ -26,7 +26,7 @@ export function updateWifi(data) {
 
 export function fetchWifi() {
   return request({
-    url: '/robots/wifi-init',
+    url: '/robots/wifi_init',
     method: 'get'
   })
 }

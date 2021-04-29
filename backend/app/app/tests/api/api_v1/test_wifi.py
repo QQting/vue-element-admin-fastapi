@@ -21,7 +21,7 @@ class TestWifiGetRequest:
     @pytest.fixture(scope="class", autouse=True)
     def get_wifi_set(self, client: TestClient, superuser_token_headers: Dict[str, str]):
         response = client.get(
-            "/robots/wifi-init", headers=superuser_token_headers)
+            "/robots/wifi_init", headers=superuser_token_headers)
         return response
 
     @pytest.fixture(scope="class", autouse=True)
@@ -39,7 +39,7 @@ class TestWifiGetRequest:
         if "RMTHost.nmconnection" in os.listdir("/etc/NetworkManager/system-connections"):
             subprocess.run(["nmcli", "con", "delete", "RMTHost"], stdout=subprocess.PIPE)
         response = client.get(
-            "/robots/wifi-init", headers=superuser_token_headers)
+            "/robots/wifi_init", headers=superuser_token_headers)
         assert response.json()["data"] == default_wifi_data
 
 class TestWifiPostRequest:

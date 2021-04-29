@@ -92,7 +92,7 @@ def wifi_callback(*, wifi_mode: schemas.WifiMode,) -> Any:
 
     return {"code": 20000, "data": result.stdout.decode('utf-8').rstrip("\n")}
 
-@router.get("/wifi-init", response_model=schemas.Response)
+@router.get("/wifi_init", response_model=schemas.Response)
 def current_wifi():
     if "RMTHost.nmconnection" not in os.listdir("/etc/NetworkManager/system-connections"):
         wifi_data = {
