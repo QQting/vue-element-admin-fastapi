@@ -11,42 +11,8 @@ import json
 import os 
 import subprocess
 import re
-from pydantic import BaseModel
-from typing import List, Dict
 
 router = APIRouter()
-
-class SetSameConfigById_ReqBody(BaseModel):
-    device_list: List[str] = ["5566", "6166"]
-    config_dict: Dict[str, str] = {
-        "locate": "on"
-    }
-
-class SetDiffConfigById_ReqBody(BaseModel):
-    device_config_json: Dict[str, dict] = {
-        "5566": {
-            "hostname": "ROScube-1",
-            "locate": "on"
-        },
-        "6166": {
-            "hostname": "ROScube-2",
-            "locate": "on"            
-        }
-    }
-
-class SetSequentialConfigById_ReqBody(BaseModel):
-    device_list: List[str] = ["5566", "5567", "5568", "5569"]
-    numbering_config_start: Dict[str, str] = {
-        "ip": "192.168.0.1",
-        "hostname": "roscube1"
-    }
-
-class GetSameConfigById_ReqBody(BaseModel):
-    device_list: List[str] = ["5566", "6166"]
-    config_list: List[str] = ["cpu", "ram", "hostname", "wifi"]
-
-class GetConfigForAll_ReqBody(BaseModel):
-    config_list: List[str] = ["cpu", "ram", "hostname", "wifi"]
 
 def rmt_get_config_for_all(dev_list, dev_num, config_list):
     # Create config key string
@@ -259,7 +225,7 @@ def rmt_discovery():
     return dev_list, num
 
 @router.post("/get_config_for_all", response_model=schemas.Response)
-def get_config_for_all(config_req_body: GetConfigForAll_ReqBody) -> Any:
+def get_config_for_all(config_req_body: schemas.GetConfigForAll_ReqBody) -> Any:
     code = 40400 # not found for default
     dev_list, num = rmt_discovery()
     data = rmt_get_config_for_all(dev_list, num, config_req_body.config_list)
@@ -272,7 +238,7 @@ def get_config_for_all(config_req_body: GetConfigForAll_ReqBody) -> Any:
     return {"code": code, "data": data}
 
 @router.post("/get_same_config_by_id", response_model=schemas.Response)
-def get_same_config_by_id(config_req_body: GetSameConfigById_ReqBody) -> Any:
+def get_same_config_by_id(config_req_body: schemas.GetSameConfigById_ReqBody) -> Any:
     code = 40400 # not found for default
     rmt_py_wrapper.rmt_server_init()
     target_list = config_req_body.device_list
@@ -293,7 +259,7 @@ def get_same_config_by_id(config_req_body: GetSameConfigById_ReqBody) -> Any:
 #     pass
 
 @router.put("/set_same_config_by_id", response_model=schemas.Response)
-def set_same_config_by_id(config_req_body: SetSameConfigById_ReqBody) -> Any:
+def set_same_config_by_id(config_req_body: schemas.SetSameConfigById_ReqBody) -> Any:
     code = 40400 # not found for default
     rmt_py_wrapper.rmt_server_init()
     target_list = config_req_body.device_list
@@ -306,7 +272,7 @@ def set_same_config_by_id(config_req_body: SetSameConfigById_ReqBody) -> Any:
     return {"code": code, "data": data}
 
 @router.put("/set_diff_config_by_id", response_model=schemas.Response)
-def set_diff_config_by_id(config_req_body: SetDiffConfigById_ReqBody) -> Any:
+def set_diff_config_by_id(config_req_body: schemas.SetDiffConfigById_ReqBody) -> Any:
     code = 40400 # not found for default
     rmt_py_wrapper.rmt_server_init()
     data = rmt_set_diff_config_by_id(config_req_body.device_config_json)
@@ -316,7 +282,7 @@ def set_diff_config_by_id(config_req_body: SetDiffConfigById_ReqBody) -> Any:
     return {"code": code, "data": data}
 
 @router.put("/set_sequential_config_by_id", response_model=schemas.Response)
-def set_seq_config_by_id(config_req_body: SetSequentialConfigById_ReqBody) -> Any:
+def set_seq_config_by_id(config_req_body: schemas.SetSequentialConfigById_ReqBody) -> Any:
     code = 40400 # not found for default
     rmt_py_wrapper.rmt_server_init()
     device_list = config_req_body.device_list
