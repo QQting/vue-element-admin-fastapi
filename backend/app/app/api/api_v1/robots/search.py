@@ -66,12 +66,12 @@ def modify_ap_config(ssid, password, band):
     result = subprocess.run(["nmcli", "con", "modify", "RMTHost", "802-11-wireless-security.psk", str(password)], stdout=subprocess.PIPE)
     return result
 
-@router.post("/wifi", response_model=schemas.Response)
-def wifi_callback(*, wifi_mode: schemas.WifiMode,) -> Any:
-    wifi_set = {"ssid": wifi_mode.ssid, "password": wifi_mode.password, "band": wifi_mode.band, "mode_on": wifi_mode.mode_on}
+@router.post("/set_wifi_hotspot", response_model=schemas.Response)
+def set_wifi_hotspot_mode(wifi_mode: schemas.WifiMode) -> Any:
+    wifi_set = {"hotspot_enable": wifi_mode.hotspot_enable, "ssid": wifi_mode.ssid, "password": wifi_mode.password, "band": wifi_mode.band}
     result = subprocess.run(["nmcli", "-t", "-f", "NAME", "con", "show", "--active"], stdout=subprocess.PIPE)
     active_name = result.stdout.decode('utf-8').split("\n")
-    mode_on = "RMTHost" in active_name
+    hotspot_enable = "RMTHost" in active_name
     band_code = {"2.4 GHz": "bg", "5 GHz": "a"}
     #Create connection for the very first request
     if "RMTHost.nmconnection" not in os.listdir("/etc/NetworkManager/system-connections"):
@@ -86,27 +86,27 @@ def wifi_callback(*, wifi_mode: schemas.WifiMode,) -> Any:
 
     result = modify_ap_config(wifi_set["ssid"], wifi_set["password"], band_code[wifi_set["band"]])
 
-    if wifi_set["mode_on"] != mode_on:
-        con_stat = "up" if wifi_set["mode_on"] else "down"
+    if wifi_set["hotspot_enable"] != hotspot_enable:
+        con_stat = "up" if wifi_set["hotspot_enable"] else "down"
         result = subprocess.run(["nmcli", "con", str(con_stat), "RMTHost"], stdout=subprocess.PIPE)
 
     return {"code": 20000, "data": result.stdout.decode('utf-8').rstrip("\n")}
 
-@router.get("/wifi_init", response_model=schemas.Response)
-def current_wifi():
+@router.get("/get_wifi_hotspot", response_model=schemas.Response)
+def get_wifi_hotspot_mode():
     if "RMTHost.nmconnection" not in os.listdir("/etc/NetworkManager/system-connections"):
         wifi_data = {
+            "hotspot_enable": False,
             "ssid": "RMTserver",
             "password": "adlinkros",
-            "band": "2.4 GHz",
-            "mode_on": False
+            "band": "2.4 GHz"
         }
 
         return {"code": 20000, "data": wifi_data}
 
     result = subprocess.run(["nmcli", "-t", "-f", "NAME", "con", "show", "--active"], stdout=subprocess.PIPE)
     active_name = result.stdout.decode('utf-8').split("\n")
-    mode_on = "RMTHost" in active_name
+    hotspot_enable = "RMTHost" in active_name
     result = subprocess.run(["nmcli", "-f", "802-11-wireless.ssid", "connection", "show", "RMTHost"], stdout=subprocess.PIPE)
     ssid = result.stdout.decode('utf-8').replace("\n", "").split()[1]
     result = subprocess.run(["nmcli", "-s", "-f", "802-11-wireless-security.psk", "connection", "show", "RMTHost"], stdout=subprocess.PIPE)
@@ -116,10 +116,10 @@ def current_wifi():
     band_code = {"bg": "2.4 GHz", "a": "5 GHz"}
     band_freq = band_code[band]
     wifi_data = {
+        "hotspot_enable": hotspot_enable,
         "ssid": ssid,
         "password": password,
-        "band": band_freq,
-        "mode_on": mode_on
+        "band": band_freq
     }
 
     return {"code": 20000, "data": wifi_data}

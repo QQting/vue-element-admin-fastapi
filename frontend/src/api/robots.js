@@ -18,7 +18,7 @@ export function set_config_diff(data) {
 
 export function updateWifi(data) {
   return request({
-    url: '/robots/wifi',
+    url: '/robots/set_wifi_hotspot',
     method: 'post',
     data
   })
@@ -26,7 +26,7 @@ export function updateWifi(data) {
 
 export function fetchWifi() {
   return request({
-    url: '/robots/wifi_init',
+    url: '/robots/get_wifi_hotspot',
     method: 'get'
   })
 }

@@ -169,7 +169,7 @@ export default {
         ssid: '',
         password: '',
         band: '2.4 GHz',
-        mode_on: false
+        hotspot_enable: false
       },
       wifi_client: {
         ssid: '',

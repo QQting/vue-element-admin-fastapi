@@ -3,7 +3,7 @@
     <el-dialog title="Access Point Mode Setting" :visible.sync="dialogFormVisible" @close="closeDialog">
       <el-form ref="dataForm" :model="wifiSet" label-position="left" label-width="125px" style="width: 400px; margin-left:50px; margin-top:20px">
         <el-switch
-          v-model="wifiSet.mode_on"
+          v-model="wifiSet.hotspot_enable"
           active-text="ON"
           inactive-text="OFF"
         />

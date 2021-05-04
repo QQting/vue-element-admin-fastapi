@@ -12,16 +12,16 @@ def str_generator(size, chars=string.ascii_letters + string.digits):
 
 @pytest.fixture(scope="module")
 def default_wifi_data():
-    return {"ssid": "RMTserver",
+    return {"hotspot_enable": False,
+            "ssid": "RMTserver",
             "password": "adlinkros",
-            "band": "2.4 GHz",
-            "mode_on": False}
+            "band": "2.4 GHz"}
 
 class TestWifiGetRequest:
     @pytest.fixture(scope="class", autouse=True)
     def get_wifi_set(self, client: TestClient, superuser_token_headers: Dict[str, str]):
         response = client.get(
-            "/robots/wifi_init", headers=superuser_token_headers)
+            "/robots/get_wifi_hotspot", headers=superuser_token_headers)
         return response
 
     @pytest.fixture(scope="class", autouse=True)
@@ -39,7 +39,7 @@ class TestWifiGetRequest:
         if "RMTHost.nmconnection" in os.listdir("/etc/NetworkManager/system-connections"):
             subprocess.run(["nmcli", "con", "delete", "RMTHost"], stdout=subprocess.PIPE)
         response = client.get(
-            "/robots/wifi_init", headers=superuser_token_headers)
+            "/robots/get_wifi_hotspot", headers=superuser_token_headers)
         assert response.json()["data"] == default_wifi_data
 
 class TestWifiPostRequest:
@@ -48,11 +48,11 @@ class TestWifiPostRequest:
         faux_set = {"ssid": str_generator(size=random.randint(request.param[0], request.param[1])),
                     "password": str_generator(size=random.randint(request.param[2], request.param[3])),
                     "band": "2.4 GHz",
-                    "mode_on": False}
-        response = client.post("/robots/wifi", headers=superuser_token_headers, json=faux_set)
+                    "hotspot_enable": False}
+        response = client.post("/robots/set_wifi_hotspot", headers=superuser_token_headers, json=faux_set)
         yield response
         subprocess.run(["nmcli", "con", "delete", "RMTHost"], stdout=subprocess.PIPE)
-        response = client.post("/robots/wifi", headers=superuser_token_headers, json=default_wifi_data)
+        response = client.post("/robots/set_wifi_hotspot", headers=superuser_token_headers, json=default_wifi_data)
 
     @pytest.fixture(scope="class", params=[True, False], ids=["init","exist"])
     def post_response(self, request, client: TestClient, superuser_token_headers: Dict[str, str]):
@@ -61,8 +61,8 @@ class TestWifiPostRequest:
         test_set = {"ssid": str_generator(size=random.randint(1, 32)),
                     "password": str_generator(size=random.randint(8, 32)),
                     "band": "2.4 GHz",
-                    "mode_on": request.param}
-        response = client.post("/robots/wifi", headers=superuser_token_headers, json=test_set)
+                    "hotspot_enable": request.param}
+        response = client.post("/robots/set_wifi_hotspot", headers=superuser_token_headers, json=test_set)
         return response
 
     def test_post_wifi(self, post_response): 
