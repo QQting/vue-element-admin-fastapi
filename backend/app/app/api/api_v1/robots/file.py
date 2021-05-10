@@ -2,7 +2,7 @@ from typing import Any, Optional
 
 from fastapi import APIRouter, HTTPException, File, UploadFile
 from app import schemas
-from app.api.api_v1.robots.RMT_core import rmt_py_wrapper
+import rmt_py_wrapper
 import json
 import os 
 import subprocess

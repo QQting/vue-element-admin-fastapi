@@ -1,61 +1,5 @@
 # vue-element-admin-fastapi
 
-## Tech Stack
-frontend: vue-element-admin  
-backend: FastAPI, Celery, and PostgreSQL
-
-## File Location
-```
-root:[vue-element-admin-fastapi]
-|--frontend		#vue-element-admin
-|--backend
-|      |--app
-|      |      |--alembic	#alembic
-|      |      |--app
-|      |      |      |--api
-|      |      |      |      |--api_v1
-|      |      |      |      |      |--api.py
-|      |      |      |      |      |--endpoints
-|      |      |      |      |      |--report	#excel export api 敏捷开发 
-|      |      |      |      |      |      |--gen_excel.py
-|      |      |      |      |      |      |--gen_report.py
-|      |      |      |      |      |      |--report
-|      |      |      |      |      |      |--__init__.py
-|      |      |      |      |      |--system
-|      |      |      |      |      |--websocket	#python-socketio,异步类视图区分命名空间
-|      |      |      |      |      |      |--server.py
-|      |      |      |      |--deps.py
-|      |      |      |--celery_app	#celery
-|      |      |      |      |--celery_app.py
-|      |      |      |      |--worker
-|      |      |      |      |      |--example.py
-|      |      |      |--core
-|      |      |      |      |--config.py
-|      |      |      |      |--security.py
-|      |      |      |--crud
-|      |      |      |--db
-|      |      |      |      |--base.py
-|      |      |      |      |--session.py
-|      |      |      |--extensions
-|      |      |      |      |--exception.py	#全局异常捕获 暂时没有使用的需要,所以没用
-|      |      |      |      |--logger.py	#替代原来的日志
-|      |      |      |      |--routing.py	#重写路由器  支持exclude_dependencies参数=>支持全局登陆验证剔除login端口 或者你可以通过单独挂载一个新的路由器来避免全局变量
-|      |      |      |      |--utils.py		#utils 主要使用了其中的list_to_tree
-|      |      |      |--initial_data.py		#初始化数据
-|      |      |      |--main.py
-|      |      |      |--middleware			#中间件
-|      |      |      |      |--access_middle.py		#中间件 登陆日志
-|      |      |      |--models		#models 	Table
-|      |      |      |--schemas		#schemas	Pydantic
-|      |      |      |--tests
-|      |      |      |--__init__.py
-|      |      |--pyproject.toml		#项目所需要的包
-|      |      |--scripts
-|--logs				#日志路径
-|      |--backend
-|      |--celery
-```
-
 ## Prerequisite
 
 1. Ubuntu 20.04
@@ -70,6 +14,9 @@ root:[vue-element-admin-fastapi]
     ```bash
     cd $HOME
     git clone https://github.com/QQting/vue-element-admin-fastapi.git
+
+    cd $HOME/vue-element-admin-fastapi/backend/lib
+    sudo dpkg -i *.deb
 
     cd $HOME/vue-element-admin-fastapi/backend/app
     curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -

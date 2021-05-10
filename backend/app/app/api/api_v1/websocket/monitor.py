@@ -6,7 +6,7 @@ from app import models, schemas
 from app.api import deps
 from app.extensions.utils import list_to_tree
 from random import randint
-from app.api.api_v1.robots.RMT_core import rmt_py_wrapper
+import rmt_py_wrapper
 import json
 import numpy as np
 import socketio
